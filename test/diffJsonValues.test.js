@@ -1,6 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { diffJsonValues } from '../index.js';
+import { diffJsonValues } from '../lib/diff.js';
 
 describe('diffJsonValues', () => {
   test('should return empty array for identical values', () => {

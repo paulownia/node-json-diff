@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import chalk from 'chalk';
 
 /**
  * Create a diff between two JSON values
@@ -152,14 +153,19 @@ export function diffJsonFiles(file1, file2) {
     const json1 = JSON.parse(fs.readFileSync(path.resolve(file1), 'utf8'));
     const json2 = JSON.parse(fs.readFileSync(path.resolve(file2), 'utf8'));
 
-    console.log(`--- ${file1}`);
-    console.log(`+++ ${file2}`);
+    console.log(chalk.cyan(`--- ${file1}`));
+    console.log(chalk.cyan(`+++ ${file2}`));
 
     const diffList = diffJsonValues(json1, json2);
     for (const diffItem of diffList) {
       console.log(`@ ${toPathJqQuery(diffItem.path)} (${diffItem.type})`);
-      if (diffItem.lhs !== undefined) console.log(`  - ${JSON.stringify(diffItem.lhs, null, 0)}`);
-      if (diffItem.rhs !== undefined) console.log(`  + ${JSON.stringify(diffItem.rhs, null, 0)}`);
+
+      if (diffItem.lhs !== undefined) {
+        console.log(chalk.red(`  - ${JSON.stringify(diffItem.lhs, null, 0)}`));
+      }
+      if (diffItem.rhs !== undefined) {
+        console.log(chalk.green(`  + ${JSON.stringify(diffItem.rhs, null, 0)}`));
+      }
     }
   } catch (error) {
     if (error.code === 'ENOENT') {

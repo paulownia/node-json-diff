@@ -30,5 +30,8 @@
   "bugs": {
     "url": "https://github.com/paulownia/node-json-diff/issues"
   },
-  "homepage": "https://github.com/paulownia/node-json-diff#readme"
+  "homepage": "https://github.com/paulownia/node-json-diff#readme",
+  "dependencies": {
+    "chalk": "^5.4.1"
+  }
 }

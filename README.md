@@ -1,4 +1,4 @@
-# json-diff-cli
+# json-diff
 
 [![CI](https://github.com/paulownia/node-json-diff/actions/workflows/ci.yml/badge.svg)](https://github.com/paulownia/node-json-diff/actions/workflows/ci.yml)
 
@@ -47,15 +47,15 @@ Running `json-diff file1.json file2.json` will output:
 ```
 --- file1.json
 +++ file2.json
-@ .age
-- 30
-+ 31
-@ .city
-- "New York"
-+ "Los Angeles"
-@ .hobbies
-- ["reading","swimming"]
-+ ["reading","cycling","swimming"]
+@ .age (modified)
+  - 30
+  + 31
+@ .city (modified)
+  - "New York"
+  + "Los Angeles"
+@ .hobbies (modified)
+  - ["reading","swimming"]
+  + ["reading","cycling","swimming"]
 ```
 
 The `@` lines show the path to each difference in jq query format, which can be used directly with the `jq` command-line tool. For example:

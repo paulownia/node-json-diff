@@ -8,8 +8,8 @@
     "json-diff": "./bin/json-diff"
   },
   "scripts": {
-    "test": "node --test test/**/*.test.js",
-    "test:watch": "node --test --watch test/**/*.test.js"
+    "test": "node --test test/*.test.js",
+    "test:watch": "node --test --watch test/*.test.js"
   },
   "keywords": [
     "json",

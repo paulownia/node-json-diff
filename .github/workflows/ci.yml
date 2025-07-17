@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [18.x, 20.x, 22.x]
 
@@ -49,6 +50,13 @@ jobs:
         ls test/*.test.js
         echo "test/**/*.test.js expands to:"
         ls test/**/*.test.js || echo "Failed to expand test/**/*.test.js"
+
+    - name: Debug - Test Node.js version specific glob support
+      run: |
+        echo "=== Node.js version specific tests ==="
+        echo "Node version: $(node --version)"
+        echo "Testing ** pattern support:"
+        node --test test/**/*.test.js && echo "** pattern works on $(node --version)" || echo "** pattern fails on $(node --version)"
 
     - name: Run tests
       run: |

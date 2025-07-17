@@ -5,7 +5,7 @@ A command-line tool to compare JSON files and show differences in a unified diff
 ## Installation
 
 ```bash
-npm install -g @paulownia/json-diff-cli
+npm install -g @paulownia/json-diff
 ```
 
 ## Usage
@@ -71,7 +71,7 @@ jq '.hobbies' file2.json
 You can also use this package as a library in your Node.js applications:
 
 ```javascript
-import { diffJsonFiles, diffJsonValues } from '@paulownia/json-diff-cli';
+import { diffJsonFiles, diffJsonValues } from '@paulownia/json-diff';
 
 // Compare two JSON files
 diffJsonFiles('file1.json', 'file2.json');

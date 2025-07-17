@@ -1,0 +1,33 @@
+{
+  "name": "@paulownia/json-diff-cli",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A command-line tool to compare JSON files and show differences",
+  "main": "index.js",
+  "bin": {
+    "json-diff": "./bin/json-diff"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "json",
+    "diff",
+    "cli",
+    "compare",
+    "tool"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/json-diff-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/json-diff-cli/issues"
+  },
+  "homepage": "https://github.com/yourusername/json-diff-cli#readme"
+}

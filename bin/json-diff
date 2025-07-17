@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+
+import { diffJsonFiles } from '../index.js';
+
+/**
+ * entry point
+ */
+function main(file1, file2) {
+  if (!file1 || !file2) {
+    console.error('Usage: json-diff <file1.json> <file2.json>');
+    process.exit(1);
+  }
+
+  try {
+    diffJsonFiles(file1, file2);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
+  }
+}
+
+main(process.argv[2], process.argv[3]);

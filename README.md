@@ -1,5 +1,7 @@
 # json-diff-cli
 
+[![CI](https://github.com/paulownia/node-json-diff/actions/workflows/ci.yml/badge.svg)](https://github.com/paulownia/node-json-diff/actions/workflows/ci.yml)
+
 A command-line tool to compare JSON files and show differences in a unified diff format.
 
 ## Installation
@@ -123,7 +125,7 @@ Each difference object has the following structure:
 
 ## Requirements
 
-- Node.js >= 14.0.0
+- Node.js >= 18.0.0
 
 ## License
 

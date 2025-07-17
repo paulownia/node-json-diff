@@ -24,10 +24,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/paulownia/json-diff.git"
+    "url": "git+https://github.com/paulownia/node-json-diff.git"
   },
   "bugs": {
-    "url": "https://github.com/paulownia/json-diff/issues"
+    "url": "https://github.com/paulownia/node-json-diff/issues"
   },
-  "homepage": "https://github.com/paulownia/json-diff#readme"
+  "homepage": "https://github.com/paulownia/node-json-diff#readme"
 }

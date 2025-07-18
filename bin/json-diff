@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { diffJsonFiles } from '../index.js';
+import { printJsonFilesDiff } from '../index.js';
 
 /**
  * entry point
@@ -12,7 +12,7 @@ function main(file1, file2) {
   }
 
   try {
-    diffJsonFiles(file1, file2);
+    printJsonFilesDiff(file1, file2);
   } catch (error) {
     console.error(`Error: ${error.message}`);
     process.exit(1);

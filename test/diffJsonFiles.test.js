@@ -1,13 +1,13 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { diffJsonFiles } from '../index.js';
+import { printJsonFilesDiff } from '../index.js';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-describe('diffJsonFiles', () => {
+describe('printJsonFilesDiff', () => {
   test('should compare JSON files without throwing', () => {
     const leftFile = path.join(__dirname, 'fixtures', 'simple-left.json');
     const rightFile = path.join(__dirname, 'fixtures', 'simple-right.json');
@@ -18,7 +18,7 @@ describe('diffJsonFiles', () => {
     console.log = (...args) => logs.push(args.join(' '));
 
     try {
-      diffJsonFiles(leftFile, rightFile);
+      printJsonFilesDiff(leftFile, rightFile);
 
       // Verify that output was generated
       assert(logs.length > 0, 'Should generate output');
@@ -43,7 +43,7 @@ describe('diffJsonFiles', () => {
     const rightFile = path.join(__dirname, 'fixtures', 'simple-right.json');
 
     assert.throws(() => {
-      diffJsonFiles(leftFile, rightFile);
+      printJsonFilesDiff(leftFile, rightFile);
     }, /File not found/);
   });
 
@@ -58,7 +58,7 @@ describe('diffJsonFiles', () => {
       const rightFile = path.join(__dirname, 'fixtures', 'simple-right.json');
 
       assert.throws(() => {
-        diffJsonFiles(invalidJsonPath, rightFile);
+        printJsonFilesDiff(invalidJsonPath, rightFile);
       }, /Not a valid JSON file/);
 
     } finally {

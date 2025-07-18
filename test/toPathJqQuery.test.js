@@ -1,6 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { toPathJqQuery } from '../lib/pathUtil.js';
+import { toPathJqQuery } from '../index.js';
 
 describe('toPathJqQuery', () => {
   test('should return "." for empty path', () => {

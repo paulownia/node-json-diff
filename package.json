@@ -8,7 +8,8 @@
     "json-diff": "./bin/json-diff"
   },
   "scripts": {
-    "test": "node --test test/*.test.js",
+    "test": "node --test --enable-source-maps --import @power-assert/node test/*.test.js",
+    "test:ci": "node --test test/*.test.js",
     "test:watch": "node --test --watch test/*.test.js"
   },
   "keywords": [
@@ -36,5 +37,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "devDependencies": {
+    "@power-assert/node": "^0.6.0"
   }
 }

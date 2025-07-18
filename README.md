@@ -73,26 +73,38 @@ jq '.hobbies' file2.json
 You can also use this package as a library in your Node.js applications:
 
 ```javascript
-import { diffJsonFiles, diffJsonValues } from '@paulownia/json-diff';
+import { printJsonFileDiff, diffJsonFiles, diffJsonValues } from '@paulownia/json-diff';
+
+// Compare two JSON files and print diff
+printJsonFileDiff('file1.json', 'file2.json');
 
 // Compare two JSON files
-diffJsonFiles('file1.json', 'file2.json');
+const fileDifferences = diffJsonFiles('file1.json', 'file2.json')
+console.log(fileDifferences);
 
 // Compare two JSON objects
 const obj1 = { name: 'John', age: 30 };
 const obj2 = { name: 'John', age: 31 };
-const differences = diffJsonValues(obj1, obj2);
-console.log(differences);
+const objectDifferences = diffJsonValues(obj1, obj2);
+console.log(objectDifferences);
 ```
 
 ## API
 
-### `diffJsonFiles(file1, file2)`
+### `printJsonFileDiff(file1, file2)`
 
 Compare two JSON files and output the differences to console.
 
 - `file1` (string): Path to the first JSON file
 - `file2` (string): Path to the second JSON file
+
+### `diffJsonFiles(json1, json2)`
+
+Compare two JSON files and return the differences as an array.
+
+- `json1` (any): First JSON object
+- `json2` (any): Second JSON object
+- Returns: Array of difference objects
 
 ### `diffJsonValues(json1, json2)`
 

@@ -91,7 +91,7 @@ console.log(objectDifferences);
 
 ## API
 
-### `printJsonFileDiff(file1, file2)`
+### `printJsonFilesDiff(file1, file2)`
 
 Compare two JSON files and output the differences to console.
 

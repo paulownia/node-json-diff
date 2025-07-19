@@ -1,9 +1,20 @@
 // JSON diff logic
 
+export type DiffItem = {
+  path: (string | number)[];
+  lhs: any;
+  rhs: any;
+  type: string;
+};
+
 /**
  * Create a diff between two JSON values
  */
-export function diffJsonValues(left, right, pathArray = []) {
+export function diffJsonValues(
+  left: any,
+  right: any,
+  pathArray: (string | number)[] = []
+): DiffItem[] {
   // Exclude the case where both are null
   if (left === null && right === null) {
     return []; // no difference
@@ -57,7 +68,11 @@ export function diffJsonValues(left, right, pathArray = []) {
 /**
  * Create a diff between two JSON Arrays
  */
-function diffJsonArrays(left, right, pathArray) {
+function diffJsonArrays(
+  left: any[],
+  right: any[],
+  pathArray: (string | number)[]
+): DiffItem[] {
   // compare length, if they are different, not compare each element
   if (left.length !== right.length) {
     return [{
@@ -69,7 +84,7 @@ function diffJsonArrays(left, right, pathArray) {
   }
 
   // compare each element
-  const diffs = [];
+  const diffs: DiffItem[] = [];
   for (let i = 0; i < left.length; i++) {
     const elementDiffs = diffJsonValues(left[i], right[i], [...pathArray, i]);
     diffs.push(...elementDiffs);
@@ -81,15 +96,19 @@ function diffJsonArrays(left, right, pathArray) {
 /**
  * Create a diff between two JSON Objects
  */
-function diffJsonObjects(left, right, pathArray) {
+function diffJsonObjects(
+  left: Record<string, any>,
+  right: Record<string, any>,
+  pathArray: (string | number)[]
+): DiffItem[] {
   // Compare object keys
-  const diffs = [];
+  const diffs: DiffItem[] = [];
   const leftKeys = Object.keys(left);
   const rightKeys = Object.keys(right);
 
   // compare keys in both objects
   for (const key of leftKeys) {
-    if (!right.hasOwnProperty(key)) {
+    if (!Object.prototype.hasOwnProperty.call(right, key)) {
       // the key exists only in left
       diffs.push({
         path: [...pathArray, key],
@@ -106,7 +125,7 @@ function diffJsonObjects(left, right, pathArray) {
 
   for (const key of rightKeys) {
     // the key exists only in right
-    if (!left.hasOwnProperty(key)) {
+    if (!Object.prototype.hasOwnProperty.call(left, key)) {
       diffs.push({
         path: [...pathArray, key],
         lhs: undefined,

@@ -65,7 +65,7 @@ describe('printJsonFilesDiff', () => {
       // Clean up
       try {
         fs.unlinkSync(invalidJsonPath);
-      } catch (e) {
+      } catch (_e) {
         // Ignore cleanup errors
       }
     }

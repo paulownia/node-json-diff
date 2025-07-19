@@ -13,7 +13,7 @@ export type DiffItem = {
 export function diffJsonValues(
   left: any,
   right: any,
-  pathArray: (string | number)[] = []
+  pathArray: (string | number)[] = [],
 ): DiffItem[] {
   // Exclude the case where both are null
   if (left === null && right === null) {
@@ -71,7 +71,7 @@ export function diffJsonValues(
 function diffJsonArrays(
   left: any[],
   right: any[],
-  pathArray: (string | number)[]
+  pathArray: (string | number)[],
 ): DiffItem[] {
   // compare length, if they are different, not compare each element
   if (left.length !== right.length) {
@@ -99,7 +99,7 @@ function diffJsonArrays(
 function diffJsonObjects(
   left: Record<string, any>,
   right: Record<string, any>,
-  pathArray: (string | number)[]
+  pathArray: (string | number)[],
 ): DiffItem[] {
   // Compare object keys
   const diffs: DiffItem[] = [];

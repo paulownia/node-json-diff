@@ -107,8 +107,8 @@ describe('diffJsonValues', () => {
   });
 
   test('should detect nested object changes', () => {
-    const left = { user: { name: 'John', age: 30 } };
-    const right = { user: { name: 'Jane', age: 30 } };
+    const left = { user: { name: 'John', age: 30 }};
+    const right = { user: { name: 'Jane', age: 30 }};
     const result = diffJsonValues(left, right);
 
     assert.strictEqual(result.length, 1);

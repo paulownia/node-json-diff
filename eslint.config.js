@@ -1,5 +1,6 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
+import stylistic from '@stylistic/eslint-plugin';
 
 export default tseslint.config(
   {
@@ -18,6 +19,9 @@ export default tseslint.config(
       ecmaVersion: 2022,
       sourceType: 'module',
     },
+    plugins: {
+      '@stylistic': stylistic,
+    },
     rules: {
       // カスタムルールがあれば追加
       '@typescript-eslint/no-explicit-any': 'warn',
@@ -25,6 +29,32 @@ export default tseslint.config(
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
         caughtErrorsIgnorePattern: '^_',
+      }],
+
+      // Stylistic rules
+      '@stylistic/semi': 'error',
+      '@stylistic/comma-dangle': ['error', 'always-multiline'],
+      '@stylistic/quotes': ['error', 'single'],
+      '@stylistic/block-spacing': 'error',
+      '@stylistic/indent': ['error', 2],
+      '@stylistic/space-before-blocks': 'error',
+      '@stylistic/space-in-parens': 'error',
+      '@stylistic/keyword-spacing': 'error',
+      '@stylistic/object-curly-spacing': ['error', 'always',  { objectsInObjects: false }],
+      '@stylistic/no-trailing-spaces': 'error',
+      '@stylistic/arrow-spacing': 'error',
+      '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],
+      '@stylistic/quote-props': ['error', 'consistent-as-needed'],
+      '@stylistic/function-call-spacing': ['error', 'never'],
+      '@stylistic/space-before-function-paren': ['error', {
+        anonymous: 'never',
+        named: 'never',
+        asyncArrow: 'always',
+      }],
+      '@stylistic/no-multiple-empty-lines': ['error', {
+        max: 1,
+        maxEOF: 0,
+        maxBOF: 0,
       }],
     },
   },
@@ -35,5 +65,5 @@ export default tseslint.config(
       // テストファイル用のルール調整
       '@typescript-eslint/no-explicit-any': 'off',
     },
-  }
+  },
 );

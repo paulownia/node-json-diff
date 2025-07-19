@@ -3,18 +3,12 @@ import path from 'path';
 import chalk from 'chalk';
 import { diffJsonValues } from './diff.js';
 import { toPathJqQuery } from './path-utils.js';
-
-export type DiffItem = {
-  path: (string | number)[];
-  lhs: any;
-  rhs: any;
-  type: string;
-};
+import { DiffItem } from './types.js';
 
 export function diffJsonFiles(file1: string, file2: string): DiffItem[] {
   const json1 = JSON.parse(fs.readFileSync(path.resolve(file1), 'utf8'));
   const json2 = JSON.parse(fs.readFileSync(path.resolve(file2), 'utf8'));
-  return diffJsonValues(json1, json2) as DiffItem[];
+  return diffJsonValues(json1, json2);
 }
 
 export function printJsonFilesDiff(file1: string, file2: string): void {

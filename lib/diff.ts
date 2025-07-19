@@ -1,18 +1,11 @@
 // JSON diff logic
-
-export type DiffItem = {
-  path: (string | number)[];
-  lhs: any;
-  rhs: any;
-  type: string;
-};
-
+import { JsonValue, DiffItem, isJsonPrimitive, JsonObject , JsonArray } from './types.js';
 /**
  * Create a diff between two JSON values
  */
 export function diffJsonValues(
-  left: any,
-  right: any,
+  left: JsonValue,
+  right: JsonValue,
   pathArray: (string | number)[] = [],
 ): DiffItem[] {
   // Exclude the case where both are null
@@ -20,9 +13,9 @@ export function diffJsonValues(
     return []; // no difference
   }
 
-  // When one is null, or types are different
-  if (left === null || right === null || typeof left !== typeof right) {
-    const changeType = left === null ? 'added' : right === null ? 'deleted' : 'modified';
+  // When one is null
+  if (left === null || right === null) {
+    const changeType = left === null ? 'added' : 'deleted';
     return [{
       path: pathArray,
       lhs: left,
@@ -32,7 +25,7 @@ export function diffJsonValues(
   }
 
   // When both are primitive values
-  if (typeof left !== 'object' && typeof right !== 'object') {
+  if (isJsonPrimitive(left) && isJsonPrimitive(right)) {
     if (left !== right) {
       return [{
         path: pathArray,
@@ -44,7 +37,14 @@ export function diffJsonValues(
     return []; // no difference
   }
 
-  // At this point, both are guaranteed to be objects or arrays
+  if (isJsonPrimitive(left) || isJsonPrimitive(right)) {
+    return [{
+      path: pathArray,
+      lhs: left,
+      rhs: right,
+      type: 'modified',
+    }];
+  }
 
   // if both are arrays
   if (Array.isArray(left) && Array.isArray(right)) {
@@ -69,8 +69,8 @@ export function diffJsonValues(
  * Create a diff between two JSON Arrays
  */
 function diffJsonArrays(
-  left: any[],
-  right: any[],
+  left: JsonArray,
+  right: JsonArray,
   pathArray: (string | number)[],
 ): DiffItem[] {
   // compare length, if they are different, not compare each element
@@ -86,7 +86,9 @@ function diffJsonArrays(
   // compare each element
   const diffs: DiffItem[] = [];
   for (let i = 0; i < left.length; i++) {
-    const elementDiffs = diffJsonValues(left[i], right[i], [...pathArray, i]);
+    const leftItem = left[i] as JsonValue;
+    const rightItem = right[i] as JsonValue;
+    const elementDiffs = diffJsonValues(leftItem, rightItem, [...pathArray, i]);
     diffs.push(...elementDiffs);
   }
 
@@ -97,8 +99,8 @@ function diffJsonArrays(
  * Create a diff between two JSON Objects
  */
 function diffJsonObjects(
-  left: Record<string, any>,
-  right: Record<string, any>,
+  left: JsonObject,
+  right: JsonObject,
   pathArray: (string | number)[],
 ): DiffItem[] {
   // Compare object keys
@@ -112,13 +114,13 @@ function diffJsonObjects(
       // the key exists only in left
       diffs.push({
         path: [...pathArray, key],
-        lhs: left[key],
+        lhs: left[key] as JsonValue,
         rhs: undefined,
         type: 'deleted',
       });
     } else {
       // the key exists in both objects, compare them as json values
-      const elementDiffs = diffJsonValues(left[key], right[key], [...pathArray, key]);
+      const elementDiffs = diffJsonValues(left[key] as JsonValue, right[key] as JsonValue, [...pathArray, key]);
       diffs.push(...elementDiffs);
     }
   }
@@ -129,7 +131,7 @@ function diffJsonObjects(
       diffs.push({
         path: [...pathArray, key],
         lhs: undefined,
-        rhs: right[key],
+        rhs: right[key] as JsonValue,
         type: 'added',
       });
     }

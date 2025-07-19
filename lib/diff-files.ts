@@ -13,6 +13,7 @@ export function diffJsonFiles(file1: string, file2: string): DiffItem[] {
 
 export function printJsonFilesDiff(file1: string, file2: string): void {
   try {
+    /* eslint-disable no-console */
     const diffList = diffJsonFiles(file1, file2);
 
     console.log(chalk.cyan(`--- ${file1}`));
@@ -28,6 +29,7 @@ export function printJsonFilesDiff(file1: string, file2: string): void {
         console.log(chalk.green(`  + ${JSON.stringify(diffItem.rhs, null, 0)}`));
       }
     }
+    /* eslint-enable no-console */
   } catch (e) {
     if (e instanceof SyntaxError) {
       throw new Error(`Not a valid JSON file: ${e.message}`);

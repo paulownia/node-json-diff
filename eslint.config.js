@@ -24,6 +24,7 @@ export default tseslint.config(
     },
     rules: {
       // カスタムルールがあれば追加
+      'no-console': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': ['error', {
         argsIgnorePattern: '^_',
@@ -63,6 +64,7 @@ export default tseslint.config(
     files: ['**/*.test.{js,ts}'],
     rules: {
       // テストファイル用のルール調整
+      'no-console': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },

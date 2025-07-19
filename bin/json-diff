@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { printJsonFilesDiff } from '../index.js';
+import { printJsonFilesDiff } from '../dist/index.js';
 
 /**
  * entry point

@@ -1,5 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
+import fs from 'node:fs';
 import { printJsonFilesDiff } from '../index.js';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -14,8 +15,8 @@ describe('printJsonFilesDiff', () => {
 
     // Capture console output
     const originalLog = console.log;
-    const logs = [];
-    console.log = (...args) => logs.push(args.join(' '));
+    const logs: string[] = [];
+    console.log = (...args: unknown[]) => logs.push(args.map(String).join(' '));
 
     try {
       printJsonFilesDiff(leftFile, rightFile);
@@ -47,9 +48,8 @@ describe('printJsonFilesDiff', () => {
     }, /File not found/);
   });
 
-  test('should throw error for invalid JSON', async () => {
+  test('should throw error for invalid JSON', () => {
     // Create a temporary invalid JSON file
-    const fs = await import('node:fs');
     const invalidJsonPath = path.join(__dirname, 'fixtures', 'invalid.json');
 
     try {

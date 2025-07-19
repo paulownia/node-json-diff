@@ -47,3 +47,6 @@ logs
 # Temporary folders
 tmp/
 temp/
+
+# Build output
+dist/

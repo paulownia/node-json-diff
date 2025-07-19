@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
 import { diffJsonValues } from './diff.js';
-import { toPathJqQuery } from './pathUtil.js';
+import { toPathJqQuery } from './path-utils.js';
 
 export type DiffItem = {
     path: (string | number)[];

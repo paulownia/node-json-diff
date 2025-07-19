@@ -14,8 +14,16 @@
   "bin": {
     "json-diff": "./bin/json-diff"
   },
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts",
+    "dist/lib",
+    "bin"
+  ],
   "scripts": {
+    "clean": "rm -rf dist",
     "build": "tsc",
+    "prepublishOnly": "npm run clean && npm run build",
     "test:build": "tsc && cp -R test/fixtures dist/test/fixtures",
     "test": "tsx --test --enable-source-maps --import @power-assert/node test/*.test.ts",
     "test:ci": "npm run test:build && node --test dist/test/*.test.js"

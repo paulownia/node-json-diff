@@ -1,2 +1,7 @@
 .github/
 test/
+*.ts
+*.map
+.vscode/
+node_modules/
+tsconfig.json

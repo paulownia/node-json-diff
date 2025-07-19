@@ -39,6 +39,8 @@
     "access": "public"
   },
   "devDependencies": {
-    "@power-assert/node": "^0.6.0"
+    "@power-assert/node": "^0.6.0",
+    "@types/node": "^24.0.15",
+    "typescript": "^5.8.3"
   }
 }

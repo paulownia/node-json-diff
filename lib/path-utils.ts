@@ -3,7 +3,7 @@
 /**
  * Convert a path array to a jq query string
  */
-export function toPathJqQuery(pathArray) {
+export function toPathJqQuery(pathArray: (string | number)[]): string {
   // ["a", "b", "c"] -> .a.b.c
   // ["a", 0, "c"] -> .a[0].c
   // [""]  // -> .

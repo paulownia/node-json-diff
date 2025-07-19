@@ -4,13 +4,20 @@ import chalk from 'chalk';
 import { diffJsonValues } from './diff.js';
 import { toPathJqQuery } from './pathUtil.js';
 
-export function diffJsonFiles(file1, file2) {
+export type DiffItem = {
+    path: (string | number)[];
+    lhs: any;
+    rhs: any;
+    type: string;
+};
+
+export function diffJsonFiles(file1: string, file2: string): DiffItem[] {
     const json1 = JSON.parse(fs.readFileSync(path.resolve(file1), 'utf8'));
     const json2 = JSON.parse(fs.readFileSync(path.resolve(file2), 'utf8'));
-    return diffJsonValues(json1, json2);
+    return diffJsonValues(json1, json2) as DiffItem[];
 }
 
-export function printJsonFilesDiff(file1, file2) {
+export function printJsonFilesDiff(file1: string, file2: string): void {
     try {
         const diffList = diffJsonFiles(file1, file2);
 
@@ -28,10 +35,13 @@ export function printJsonFilesDiff(file1, file2) {
             }
         }
     } catch (e) {
-        if (e.code === 'ENOENT') throw new Error(`File not found: ${e.path}`);
-        if (e.code === 'EISDIR') throw new Error(`Expected a file but found a directory: ${e.path}`);
-        if (e.code === 'EACCES') throw new Error(`Permission denied: ${e.path}`);
-        if (e instanceof SyntaxError) throw new Error(`Not a valid JSON file: ${e.message}`);
+        if (typeof e === 'object' && e !== null) {
+            const err = e as { code?: string; path?: string };
+            if (err.code === 'ENOENT') throw new Error(`File not found: ${err.path}`);
+            if (err.code === 'EISDIR') throw new Error(`Expected a file but found a directory: ${err.path}`);
+            if (err.code === 'EACCES') throw new Error(`Permission denied: ${err.path}`);
+        }
+        if (e instanceof SyntaxError) throw new Error(`Not a valid JSON file: ${e instanceof Error ? e.message : String(e)}`);
         throw e;
     }
 }

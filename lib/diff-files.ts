@@ -35,13 +35,28 @@ export function printJsonFilesDiff(file1: string, file2: string): void {
             }
         }
     } catch (e) {
-        if (typeof e === 'object' && e !== null) {
-            const err = e as { code?: string; path?: string };
-            if (err.code === 'ENOENT') throw new Error(`File not found: ${err.path}`);
-            if (err.code === 'EISDIR') throw new Error(`Expected a file but found a directory: ${err.path}`);
-            if (err.code === 'EACCES') throw new Error(`Permission denied: ${err.path}`);
+        if (e instanceof SyntaxError) {
+            throw new Error(`Not a valid JSON file: ${e.message}`);
         }
-        if (e instanceof SyntaxError) throw new Error(`Not a valid JSON file: ${e instanceof Error ? e.message : String(e)}`);
-        throw e;
+        if (isNodeErrno(e)) {
+            if (e.code === 'ENOENT') throw new Error(`File not found: ${e.path}`);
+            if (e.code === 'EISDIR') throw new Error(`Expected a file but found a directory: ${e.path}`);
+            if (e.code === 'EACCES') throw new Error(`Permission denied: ${e.path}`);
+        }
+        throw new Error(`Unexpected error: ${e instanceof Error ? e.message : String(e)}`);
     }
+}
+
+interface NodeErrno extends Error {
+    code: string;
+    errno: number;
+    path: string;
+}
+
+function isNodeErrno(e: unknown): e is NodeErrno {
+    if (!(e instanceof Error)) return false;
+    const err = e as NodeErrno;
+    return 'code' in err && typeof err.code === 'string' &&
+           'errno' in err && typeof err.errno === 'number' &&
+           'path' in err && typeof err.path === 'string';
 }

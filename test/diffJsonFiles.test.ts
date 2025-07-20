@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 
 describe('printJsonFilesDiff', () => {
   test('should compare JSON files without throwing', () => {
+    /* eslint-disable no-console */
     const leftFile = path.join(__dirname, 'fixtures', 'simple-left.json');
     const rightFile = path.join(__dirname, 'fixtures', 'simple-right.json');
 
@@ -37,6 +38,7 @@ describe('printJsonFilesDiff', () => {
     } finally {
       console.log = originalLog;
     }
+    /* eslint-enable no-console */
   });
 
   test('should throw error for non-existent file', () => {
@@ -65,7 +67,7 @@ describe('printJsonFilesDiff', () => {
       // Clean up
       try {
         fs.unlinkSync(invalidJsonPath);
-      } catch (e) {
+      } catch (_e) {
         // Ignore cleanup errors
       }
     }

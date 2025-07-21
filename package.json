@@ -50,7 +50,8 @@
   },
   "homepage": "https://github.com/paulownia/node-json-diff#readme",
   "dependencies": {
-    "chalk": "^5.4.1"
+    "chalk": "^5.4.1",
+    "fast-array-diff": "^1.1.0"
   },
   "publishConfig": {
     "access": "public"

@@ -5,6 +5,12 @@ export type DiffItem = {
   type: string;
 };
 
+export type ArrayDiffAlgorithm = 'lcs' | 'set' | 'elem';
+
+export type DiffOptions = {
+  arrayDiffAlgorithm: ArrayDiffAlgorithm;
+};
+
 export type JsonNull = null;
 
 export type JsonPrimitive = string | number | boolean;

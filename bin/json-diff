@@ -1,22 +1,26 @@
 #!/usr/bin/env node
 
 import { printJsonFilesDiff } from '../dist/index.js';
+import { parseCliOptions } from '../dist/lib/cli-options.js';
 
 /**
  * entry point
  */
-function main(file1, file2) {
-  if (!file1 || !file2) {
-    console.error('Usage: json-diff <file1.json> <file2.json>');
+function main() {
+  let options;
+  try {
+    options = parseCliOptions(process.argv.slice(2));
+  } catch (error) {
+    console.error('Usage: json-diff <file1.json> <file2.json> [--array-diff|-a <elem|lcs|set>]');
     process.exit(1);
   }
 
   try {
-    printJsonFilesDiff(file1, file2);
+    printJsonFilesDiff(options.file1, options.file2, { arrayDiffAlgorithm: options.arrayDiff });
   } catch (error) {
     console.error(`Error: ${error.message}`);
     process.exit(1);
   }
 }
 
-main(process.argv[2], process.argv[3]);
+main();

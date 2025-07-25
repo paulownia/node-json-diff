@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import { printJsonFilesDiff } from '../index.js';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { ArrayWritable, nullWritable } from './utils/writable.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,7 +21,9 @@ describe('printJsonFilesDiff', () => {
     console.log = (...args: unknown[]) => logs.push(args.map(String).join(' '));
 
     try {
-      printJsonFilesDiff(leftFile, rightFile);
+      const logs: string[] = [];
+      const arrayWritable = new ArrayWritable(logs);
+      printJsonFilesDiff(arrayWritable, leftFile, rightFile);
 
       // Verify that output was generated
       assert(logs.length > 0, 'Should generate output');
@@ -46,7 +49,7 @@ describe('printJsonFilesDiff', () => {
     const rightFile = path.join(__dirname, 'fixtures', 'simple-right.json');
 
     assert.throws(() => {
-      printJsonFilesDiff(leftFile, rightFile);
+      printJsonFilesDiff(nullWritable, leftFile, rightFile);
     }, /File not found/);
   });
 
@@ -60,7 +63,7 @@ describe('printJsonFilesDiff', () => {
       const rightFile = path.join(__dirname, 'fixtures', 'simple-right.json');
 
       assert.throws(() => {
-        printJsonFilesDiff(invalidJsonPath, rightFile);
+        printJsonFilesDiff(nullWritable, invalidJsonPath, rightFile);
       }, /Not a valid JSON file/);
 
     } finally {

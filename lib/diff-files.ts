@@ -1,5 +1,6 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+import { Writable } from 'node:stream';
 import chalk from 'chalk';
 import { diffJsonValues } from './diff.js';
 import { toPathJqQuery } from './path-utils.js';
@@ -11,25 +12,25 @@ export function diffJsonFiles(file1: string, file2: string, options: DiffOptions
   return diffJsonValues(json1, json2, [], options);
 }
 
-export function printJsonFilesDiff(file1: string, file2: string, options: DiffOptions = { arrayDiffAlgorithm: 'elem' }): void {
+export function printJsonFilesDiff(out: Writable, file1: string, file2: string, options: DiffOptions = { arrayDiffAlgorithm: 'elem' }): void {
   try {
-    /* eslint-disable no-console */
+
     const diffList = diffJsonFiles(file1, file2, options);
 
-    console.log(chalk.cyan(`--- ${file1}`));
-    console.log(chalk.cyan(`+++ ${file2}`));
+    out.write(chalk.cyan(`--- ${file1}`));
+    out.write(chalk.cyan(`+++ ${file2}`));
 
     for (const diffItem of diffList) {
-      console.log(`@ ${toPathJqQuery(diffItem.path)} (${diffItem.type})`);
+      out.write(`@ ${toPathJqQuery(diffItem.path)} (${diffItem.type})`);
 
       if (diffItem.lhs !== undefined) {
-        console.log(chalk.red(`  - ${JSON.stringify(diffItem.lhs, null, 0)}`));
+        out.write(chalk.red(`  - ${JSON.stringify(diffItem.lhs, null, 0)}`));
       }
       if (diffItem.rhs !== undefined) {
-        console.log(chalk.green(`  + ${JSON.stringify(diffItem.rhs, null, 0)}`));
+        out.write(chalk.green(`  + ${JSON.stringify(diffItem.rhs, null, 0)}`));
       }
     }
-    /* eslint-enable no-console */
+
   } catch (e) {
     if (e instanceof SyntaxError) {
       throw new Error(`Not a valid JSON file: ${e.message}`);

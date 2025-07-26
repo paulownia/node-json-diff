@@ -50,3 +50,6 @@ temp/
 
 # Build output
 dist/
+
+# test output
+test-results/

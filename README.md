@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/paulownia/node-json-diff/actions/workflows/ci.yml/badge.svg)](https://github.com/paulownia/node-json-diff/actions/workflows/ci.yml)
 
-A command-line tool to compare JSON files and show differences in a unified diff format.
+A command-line tool to compare JSON files and show differences.
 
 ## Installation
 
@@ -17,6 +17,33 @@ npm install -g @paulownia/json-diff
 ```bash
 json-diff file1.json file2.json
 ```
+
+### Options
+
+- `--array-diff` (or `-a`): Array diff algorithm (default: `elem`)
+  - `elem`: Compare arrays element by element. Arrays must have the same length for detailed comparison
+  - `lcs`: Use Myers algorithm (Longest Common Subsequence) for array comparison
+  - `set`: Treat arrays as sets, ignoring element order
+
+#### Array Diff Algorithms
+
+**elem (Element-wise comparison):**
+```bash
+json-diff file1.json file2.json --array-diff elem
+```
+This is the default behavior. Arrays are compared element by element at the same index. If arrays have different lengths, they are treated as completely different.
+
+**lcs (Myers algorithm):**
+```bash
+json-diff file1.json file2.json --array-diff lcs
+```
+Uses the Myers algorithm to find the longest common subsequence. This provides standard diff output showing additions and deletions.
+
+**set (Set comparison):**
+```bash
+json-diff file1.json file2.json --array-diff set
+```
+Treats arrays as sets, ignoring the order of elements. Only shows elements that exist in one array but not the other.
 
 ### Example
 

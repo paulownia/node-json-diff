@@ -3,8 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { Writable } from 'node:stream';
 import { diffJsonValues } from './diff.js';
-import { toPathJqQuery } from './path-utils.js';
 import { DiffItem, DiffOptions } from './types.js';
+import { pathArrayToJqQuery } from './utils/jq-query.js';
 
 export function diffJsonFiles(file1: string, file2: string, options: DiffOptions = { arrayDiffAlgorithm: 'elem' }): DiffItem[] {
   const json1 = JSON.parse(fs.readFileSync(path.resolve(file1), 'utf8'));
@@ -21,7 +21,7 @@ export function printJsonFilesDiff(out: Writable, file1: string, file2: string, 
     out.write(chalk.cyan(`+++ ${file2}`));
 
     for (const diffItem of diffList) {
-      out.write(`@ ${toPathJqQuery(diffItem.path)} (${diffItem.type})`);
+      out.write(`@ ${pathArrayToJqQuery(diffItem.path)} (${diffItem.type})`);
 
       if (diffItem.lhs !== undefined) {
         out.write(chalk.red(`  - ${JSON.stringify(diffItem.lhs, null, 0)}`));

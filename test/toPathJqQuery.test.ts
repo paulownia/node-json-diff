@@ -40,16 +40,16 @@ describe('toPathJqQuery', () => {
 
   test('should handle root array access', () => {
     const result = toPathJqQuery([0]);
-    assert.strictEqual(result, '[0]');
+    assert.strictEqual(result, '.[0]');
   });
 
   test('should handle multiple array indices', () => {
     const result = toPathJqQuery([0, 1, 2]);
-    assert.strictEqual(result, '[0][1][2]');
+    assert.strictEqual(result, '.[0][1][2]');
   });
 
   test('should handle mixed array and object access', () => {
     const result = toPathJqQuery([0, 'name', 1, 'value']);
-    assert.strictEqual(result, '[0].name[1].value');
+    assert.strictEqual(result, '.[0].name[1].value');
   });
 });

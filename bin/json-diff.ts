@@ -1,16 +1,7 @@
 #!/usr/bin/env node
 
-import { printJsonFilesDiff } from '../index.js';
 import { parseCliOptions, printUsage, printVersion } from '../lib/cli-options.js';
-import { Writable } from 'node:stream';
-
-const out = new Writable({
-  write(chunk, encoding, callback) {
-    process.stdout.write(chunk, encoding);
-    process.stdout.write('\n');
-    callback();
-  },
-});
+import { printJsonFilesDiff } from '../lib/diff-files.js';
 
 /**
  * entry point
@@ -24,23 +15,23 @@ function main(): void {
     } = parseCliOptions(process.argv.slice(2));
 
     if (help) {
-      printUsage(out);
+      printUsage(process.stdout);
       return;
     }
     if (version) {
-      printVersion(out);
+      printVersion(process.stdout);
       return;
     }
     if (!main) {
-      printUsage(out);
+      printUsage(process.stderr);
       process.exit(1);
     }
 
-    printJsonFilesDiff(out, main.file1, main.file2, { arrayDiffAlgorithm: main.arrayDiff });
+    printJsonFilesDiff(process.stdout, main.file1, main.file2, { arrayDiffAlgorithm: main.arrayDiff });
 
   } catch (error: unknown) {
     if (error instanceof TypeError) { // TypeError for invalid arguments
-      printUsage(out);
+      printUsage(process.stderr);
     } else {
       process.stderr.write(`Error: ${error instanceof Error ? error.message : error}\n`);
     }

@@ -1,6 +1,6 @@
-import { describe, test } from 'node:test';
 import assert from 'node:assert';
-import { diffJsonValues } from '../index.js';
+import { describe, test } from 'node:test';
+import { diffJsonValues } from '../lib/diff.js';
 
 describe('diffJsonArrays', () => {
   const leftArray = [1, 2, 3, 5, 8];

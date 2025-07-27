@@ -10,9 +10,13 @@ export function toPathJqQuery(pathArray: (string | number)[]): string {
   // [0]   // -> [0]
   if (pathArray.length === 0) return '.';
 
-  return pathArray.map((p) => {
+  return pathArray.map((p, i) => {
     if (typeof p === 'number') {
-      return `[${p}]`;
+      if (i === 0) {
+        return `.[${p}]`; // For the first element, use dot notation for root access
+      } else {
+        return `[${p}]`;
+      }
     }
 
     if (p.includes('.') || p.includes('[') || p.includes(']')) {

@@ -17,17 +17,17 @@ export function printJsonFilesDiff(out: Writable, file1: string, file2: string, 
 
     const diffList = diffJsonFiles(file1, file2, options);
 
-    out.write(chalk.cyan(`--- ${file1}`));
-    out.write(chalk.cyan(`+++ ${file2}`));
+    out.write(chalk.cyan(`--- ${file1}`) + '\n');
+    out.write(chalk.cyan(`+++ ${file2}`) + '\n');
 
     for (const diffItem of diffList) {
-      out.write(`@ ${pathArrayToJqQuery(diffItem.path)} (${diffItem.type})`);
+      out.write(`@ ${pathArrayToJqQuery(diffItem.path)} (${diffItem.type})\n`);
 
       if (diffItem.lhs !== undefined) {
-        out.write(chalk.red(`  - ${JSON.stringify(diffItem.lhs, null, 0)}`));
+        out.write(chalk.red(`  - ${JSON.stringify(diffItem.lhs, null, 0)}`) + '\n');
       }
       if (diffItem.rhs !== undefined) {
-        out.write(chalk.green(`  + ${JSON.stringify(diffItem.rhs, null, 0)}`));
+        out.write(chalk.green(`  + ${JSON.stringify(diffItem.rhs, null, 0)}`) + '\n');
       }
     }
 

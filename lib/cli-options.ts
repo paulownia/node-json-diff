@@ -65,6 +65,7 @@ export function parseCliOptions(args: string[]): CliOptions {
 export function printVersion(writer: Writable) {
   const packageJson = loadPackageJson();
   writer.write(packageJson.version);
+  writer.write('\n');
 }
 
 export function printUsage(writer: Writable) {
@@ -75,6 +76,7 @@ export function printUsage(writer: Writable) {
     '  -h, --help                    Show help',
     '  -v, --version                 Show version',
   ].join('\n'));
+  writer.write('\n');
 }
 
 function loadPackageJson(): { version: string, description: string } {

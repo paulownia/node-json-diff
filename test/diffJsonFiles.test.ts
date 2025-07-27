@@ -1,9 +1,9 @@
-import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import fs from 'node:fs';
-import { printJsonFilesDiff } from '../index.js';
-import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { describe, test } from 'node:test';
+import { fileURLToPath } from 'node:url';
+import { printJsonFilesDiff } from '../lib/diff-files.js';
 import { ArrayWritable, nullWritable } from './utils/writable.js';
 
 const __filename = fileURLToPath(import.meta.url);

@@ -1,7 +1,7 @@
+import chalk from 'chalk';
 import fs from 'node:fs';
 import path from 'node:path';
 import { Writable } from 'node:stream';
-import chalk from 'chalk';
 import { diffJsonValues } from './diff.js';
 import { toPathJqQuery } from './path-utils.js';
 import { DiffItem, DiffOptions } from './types.js';

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import { printJsonFilesDiff } from '../index.js';
-import { parseCliOptions, printUsage, printVersion } from '../lib/cli-options.js';
 import { Writable } from 'node:stream';
+import { parseCliOptions, printUsage, printVersion } from '../lib/cli-options.js';
+import { printJsonFilesDiff } from '../lib/diff-files.js';
 
 const out = new Writable({
   write(chunk, encoding, callback) {

@@ -1,7 +1,7 @@
-import { parseArgs } from 'node:util';
-import { ArrayDiffAlgorithm } from './types.js';
 import { readFileSync } from 'node:fs';
 import { Writable } from 'node:stream';
+import { parseArgs } from 'node:util';
+import { ArrayDiffAlgorithm } from './types.js';
 
 export interface CliOptions {
   main?: {

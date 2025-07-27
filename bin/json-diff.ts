@@ -42,7 +42,7 @@ function main(): void {
     if (error instanceof TypeError) { // TypeError for invalid arguments
       printUsage(out);
     } else {
-      process.stderr.write(`Error: ${error instanceof Error ? error.message : String(error)}\n`);
+      process.stderr.write(`Error: ${error instanceof Error ? error.message : error}\n`);
     }
     process.exit(1);
   }

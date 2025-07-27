@@ -1,6 +1,6 @@
 {
   "name": "@paulownia/json-diff",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "type": "module",
   "description": "A command-line tool to compare JSON files and show differences",
   "main": "dist/index.js",

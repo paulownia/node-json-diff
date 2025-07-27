@@ -12,17 +12,17 @@
   },
   "types": "dist/index.d.ts",
   "bin": {
-    "json-diff": "./bin/json-diff"
+    "json-diff": "./dist/bin/json-diff.js"
   },
   "files": [
     "dist/index.js",
     "dist/index.d.ts",
     "dist/lib",
-    "bin"
+    "dist/bin"
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "tsc",
+    "build": "tsc && chmod +x dist/bin/json-diff.js",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "tsx --test --enable-source-maps --import @power-assert/node test/*.test.ts",
     "test:ci": "tsc && cp -R test/fixtures dist/test/fixtures && node --test dist/test/*.test.js",
@@ -50,7 +50,6 @@
   },
   "homepage": "https://github.com/paulownia/node-json-diff#readme",
   "dependencies": {
-    "@types/yargs": "^17.0.33",
     "chalk": "^5.4.1",
     "deep-equal": "^2.2.3",
     "fast-array-diff": "^1.1.0"

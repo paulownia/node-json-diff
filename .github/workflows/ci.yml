@@ -40,7 +40,7 @@ jobs:
         echo '{"name": "test", "value": 2}' > test-right.json
 
         # Test the CLI
-        node bin/json-diff test-left.json test-right.json
+        node dist/bin/json-diff.js test-left.json test-right.json
 
         # Clean up
         rm test-left.json test-right.json

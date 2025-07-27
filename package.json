@@ -12,7 +12,7 @@
   },
   "types": "dist/index.d.ts",
   "bin": {
-    "json-diff": "./dist/bin/json-diff.js"
+    "json-diff": "dist/bin/json-diff.js"
   },
   "files": [
     "dist/index.js",

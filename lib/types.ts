@@ -1,5 +1,11 @@
+export type PathElement = string | number | {
+  type: 'keySelect';
+  keyField: string;
+  keyValue: unknown;
+};
+
 export type DiffItem = {
-  path: (string | number)[];
+  path: PathElement[];
   lhs: JsonValue | undefined;
   rhs: JsonValue | undefined;
   type: string;

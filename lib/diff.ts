@@ -1,14 +1,14 @@
 // JSON diff logic
 import deepEqual from 'deep-equal';
 import fastArrayDiff from 'fast-array-diff';
-import { DiffItem, DiffOptions, isJsonPrimitive, JsonArray, JsonObject, JsonValue } from './types.js';
+import { DiffItem, DiffOptions, isJsonPrimitive, JsonArray, JsonObject, JsonValue, PathElement } from './types.js';
 /**
  * Create a diff between two JSON values
  */
 export function diffJsonValues(
   left: JsonValue,
   right: JsonValue,
-  pathArray: (string | number)[] = [],
+  pathArray: PathElement[] = [],
   options: DiffOptions = { arrayDiffAlgorithm: 'elem' },
 ): DiffItem[] {
   // Exclude the case where both are null
@@ -74,7 +74,7 @@ export function diffJsonValues(
 function diffJsonArrays(
   left: JsonArray,
   right: JsonArray,
-  pathArray: (string | number)[],
+  pathArray: PathElement[],
   options: DiffOptions = { arrayDiffAlgorithm: 'elem' },
 ): DiffItem[] {
   if (left.length === 0 && right.length === 0) {
@@ -102,7 +102,7 @@ function diffJsonArrays(
 function diffJsonObjects(
   left: JsonObject,
   right: JsonObject,
-  pathArray: (string | number)[],
+  pathArray: PathElement[],
   options: DiffOptions = { arrayDiffAlgorithm: 'elem' },
 ): DiffItem[] {
   // Compare object keys
@@ -155,7 +155,7 @@ function diffJsonObjects(
 function diffJsonArraysBasic(
   left: JsonArray,
   right: JsonArray,
-  pathArray: (string | number)[],
+  pathArray: PathElement[],
   options: DiffOptions = { arrayDiffAlgorithm: 'elem' },
 ): DiffItem[] {
   // compare length, if they are different, not compare each element
@@ -188,7 +188,7 @@ function diffJsonArraysBasic(
 function diffJsonArrayByMyers(
   left: unknown[],
   right: unknown[],
-  pathArray: (string | number)[] = [],
+  pathArray: PathElement[] = [],
 ): DiffItem[] {
   const faDiff = fastArrayDiff.diff(left, right, (left, right) => deepEqual(left, right));
   // copy pathArray to avoid mutation
@@ -224,7 +224,7 @@ function diffJsonArrayByMyers(
 function diffJsonArraysIgnoringOrder(
   left: unknown[],
   right: unknown[],
-  pathArray: (string | number)[] = [],
+  pathArray: PathElement[] = [],
 ): DiffItem[] {
   // If both arrays are empty, return no diff
   if (left.length === 0 && right.length === 0) {
@@ -289,7 +289,7 @@ function diffJsonArraysIgnoringOrder(
 function diffJsonArraysByKey(
   left: unknown[],
   right: unknown[],
-  pathArray: (string | number)[],
+  pathArray: PathElement[],
   keyField: string,
   options: DiffOptions,
 ): DiffItem[] {
@@ -322,7 +322,7 @@ function diffJsonArraysByKey(
         type: 'deleted',
         lhs: value as JsonValue,
         rhs: undefined,
-        path: [...pathArray, `${keyField}=${key}`],
+        path: [...pathArray, { type: 'keySelect', keyField, keyValue: key }],
       });
     }
   }
@@ -335,7 +335,7 @@ function diffJsonArraysByKey(
         type: 'added',
         lhs: undefined,
         rhs: rightValue as JsonValue,
-        path: [...pathArray, `${keyField}=${key}`],
+        path: [...pathArray, { type: 'keySelect', keyField, keyValue: key }],
       });
     } else {
       // Item exists in both, compare detailed differences
@@ -343,7 +343,7 @@ function diffJsonArraysByKey(
       const itemDiffs = diffJsonValues(
         leftValue as JsonValue,
         rightValue as JsonValue,
-        [...pathArray, `${keyField}=${key}`],
+        [...pathArray, { type: 'keySelect', keyField, keyValue: key }],
         options,
       );
       diffs.push(...itemDiffs);

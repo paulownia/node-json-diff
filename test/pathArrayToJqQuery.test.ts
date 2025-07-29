@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { pathArrayToJqQuery } from '../lib/utils/jq-query.js';
+import { pathArrayToJqQuery } from '../lib/jq-query.js';
 
 describe('toPathJqQuery', () => {
   test('should return "." for empty path', () => {

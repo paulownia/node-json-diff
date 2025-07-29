@@ -89,6 +89,10 @@ function diffJsonArrays(
     return diffJsonArraysIgnoringOrder(left, right, pathArray);
   }
 
+  if (options.arrayDiffAlgorithm === 'key') {
+    return diffJsonArraysByKey(left, right, pathArray, options.arrayKey || 'id', options);
+  }
+
   return diffJsonArraysBasic(left, right, pathArray, options);
 }
 
@@ -272,5 +276,79 @@ function diffJsonArraysIgnoringOrder(
       path: pathArray,
     });
   }
+  return diffs;
+}
+
+/**
+ * Make a diff between two JSON arrays using key-based comparison.
+ *
+ * This is useful for arrays of objects where each object has a unique identifier field.
+ * Objects are matched by their key field value, and order is ignored.
+ * Provides detailed object-level differences for matched objects.
+ */
+function diffJsonArraysByKey(
+  left: unknown[],
+  right: unknown[],
+  pathArray: (string | number)[],
+  keyField: string,
+  options: DiffOptions,
+): DiffItem[] {
+  // Create maps for key-based lookup (ignoring order)
+  const leftMap = new Map<unknown, unknown>();
+  const rightMap = new Map<unknown, unknown>();
+
+  // Build left map
+  left.forEach(item => {
+    if (typeof item === 'object' && item !== null && keyField in item) {
+      const keyValue = (item as Record<string, unknown>)[keyField];
+      leftMap.set(keyValue, item);
+    }
+  });
+
+  // Build right map
+  right.forEach(item => {
+    if (typeof item === 'object' && item !== null && keyField in item) {
+      const keyValue = (item as Record<string, unknown>)[keyField];
+      rightMap.set(keyValue, item);
+    }
+  });
+
+  const diffs: DiffItem[] = [];
+
+  // Find deleted items (exist in left but not in right)
+  for (const [key, value] of leftMap) {
+    if (!rightMap.has(key)) {
+      diffs.push({
+        type: 'deleted',
+        lhs: value as JsonValue,
+        rhs: undefined,
+        path: [...pathArray, `${keyField}=${key}`],
+      });
+    }
+  }
+
+  // Find added and modified items
+  for (const [key, rightValue] of rightMap) {
+    if (!leftMap.has(key)) {
+      // New item added
+      diffs.push({
+        type: 'added',
+        lhs: undefined,
+        rhs: rightValue as JsonValue,
+        path: [...pathArray, `${keyField}=${key}`],
+      });
+    } else {
+      // Item exists in both, compare detailed differences
+      const leftValue = leftMap.get(key);
+      const itemDiffs = diffJsonValues(
+        leftValue as JsonValue,
+        rightValue as JsonValue,
+        [...pathArray, `${keyField}=${key}`],
+        options,
+      );
+      diffs.push(...itemDiffs);
+    }
+  }
+
   return diffs;
 }

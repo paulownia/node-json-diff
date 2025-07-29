@@ -100,7 +100,7 @@ describe('parseCliOptions', () => {
       parseCliOptions(['--array-diff', 'invalid', 'file1.json', 'file2.json']);
     }, {
       name: 'TypeError',
-      message: 'Invalid array diff algorithm: invalid. Must be one of \'elem\', \'lcs\', or \'set\'.',
+      message: 'Invalid array diff algorithm: invalid. Must be one of \'elem\', \'lcs\', \'set\', or \'key\'.',
     });
   });
 

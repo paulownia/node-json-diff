@@ -285,6 +285,7 @@ function diffJsonArraysIgnoringOrder(
  * This is useful for arrays of objects where each object has a unique identifier field.
  * Objects are matched by their key field value, and order is ignored.
  * Provides detailed object-level differences for matched objects.
+ * Objects without the specified key field are compared using set comparison as fallback.
  */
 function diffJsonArraysByKey(
   left: unknown[],
@@ -293,28 +294,51 @@ function diffJsonArraysByKey(
   keyField: string,
   options: DiffOptions,
 ): DiffItem[] {
+  // Separate objects with and without the key field
+  const leftWithKey: unknown[] = [];
+  const leftWithoutKey: unknown[] = [];
+  const rightWithKey: unknown[] = [];
+  const rightWithoutKey: unknown[] = [];
+
   // Create maps for key-based lookup (ignoring order)
   const leftMap = new Map<unknown, unknown>();
   const rightMap = new Map<unknown, unknown>();
 
-  // Build left map
+  // Build left map and separate objects
   left.forEach(item => {
     if (typeof item === 'object' && item !== null && keyField in item) {
       const keyValue = (item as Record<string, unknown>)[keyField];
-      leftMap.set(keyValue, item);
+      // Treat undefined as missing key (JSON doesn't have undefined)
+      if (keyValue !== undefined) {
+        leftMap.set(keyValue, item);
+        leftWithKey.push(item);
+      } else {
+        leftWithoutKey.push(item);
+      }
+    } else {
+      leftWithoutKey.push(item);
     }
   });
 
-  // Build right map
+  // Build right map and separate objects
   right.forEach(item => {
     if (typeof item === 'object' && item !== null && keyField in item) {
       const keyValue = (item as Record<string, unknown>)[keyField];
-      rightMap.set(keyValue, item);
+      // Treat undefined as missing key (JSON doesn't have undefined)
+      if (keyValue !== undefined) {
+        rightMap.set(keyValue, item);
+        rightWithKey.push(item);
+      } else {
+        rightWithoutKey.push(item);
+      }
+    } else {
+      rightWithoutKey.push(item);
     }
   });
 
   const diffs: DiffItem[] = [];
 
+  // Compare objects with key field using key-based comparison
   // Find deleted items (exist in left but not in right)
   for (const [key, value] of leftMap) {
     if (!rightMap.has(key)) {
@@ -348,6 +372,12 @@ function diffJsonArraysByKey(
       );
       diffs.push(...itemDiffs);
     }
+  }
+
+  // Compare objects without key field using set comparison as fallback
+  if (leftWithoutKey.length > 0 || rightWithoutKey.length > 0) {
+    const fallbackDiffs = diffJsonArraysIgnoringOrder(leftWithoutKey, rightWithoutKey, pathArray);
+    diffs.push(...fallbackDiffs);
   }
 
   return diffs;

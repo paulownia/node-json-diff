@@ -17,9 +17,13 @@ export function pathArrayToJqQuery(pathArray: PathElement[]): string {
 
   let result = '';
 
+  if (typeof pathArray[0] !== 'string') {
+    // start with a dot for the root element,
+    result += '.';
+  }
+
   for (let i = 0; i < pathArray.length; i++) {
     const element = pathArray[i];
-
     if (typeof element === 'string') {
       if (element.includes('.') || element.includes('[') || element.includes(']')) {
         result += `."${element}"`;
@@ -27,36 +31,13 @@ export function pathArrayToJqQuery(pathArray: PathElement[]): string {
         result += `.${element}`;
       }
     } else if (typeof element === 'number') {
-      if (i === 0) {
-        result += `.[${element}]`;
-      } else {
-        result += `[${element}]`;
-      }
+      result += `[${element}]`;
     } else if (element.type === 'keySelect') {
       // Key-based selection: .users[] | select(.id == 3)
       result += `[] | select(.${element.keyField} == ${JSON.stringify(element.keyValue)})`;
-
-      // 後続の要素があれば | .field 形式で追加
-      if (i + 1 < pathArray.length) {
-        const remainingElements = pathArray.slice(i + 1);
-        const fieldPath = remainingElements.map(el => {
-          if (typeof el === 'string') {
-            if (el.includes('.') || el.includes('[') || el.includes(']')) {
-              return `."${el}"`;
-            } else {
-              return `.${el}`;
-            }
-          } else if (typeof el === 'number') {
-            return `[${el}]`;
-          }
-          // keySelect が連続することは想定していない
-          return '';
-        }).join('');
-
-        if (fieldPath) {
-          result += ` | ${fieldPath}`;
-        }
-        break; // keySelectの後は処理完了
+      // add ' | ' to result if this element is not the last one,
+      if (i < pathArray.length - 1) {
+        result += ' | ';
       }
     }
   }

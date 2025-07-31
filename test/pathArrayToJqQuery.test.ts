@@ -72,4 +72,9 @@ describe('toPathJqQuery', () => {
     const result = pathArrayToJqQuery(['items', { type: 'keySelect', keyField: 'key.name', keyValue: 'test[0]' }]);
     assert.strictEqual(result, '.items[] | select(.key.name == "test[0]")');
   });
+
+  test('should format nested key-based selection', () => {
+    const result = pathArrayToJqQuery(['users', { type: 'keySelect', keyField: 'id', keyValue: 3 }, 'items', { type: 'keySelect', keyField: 'type', keyValue: 'book' }]);
+    assert.strictEqual(result, '.users[] | select(.id == 3) | .items[] | select(.type == "book")');
+  });
 });

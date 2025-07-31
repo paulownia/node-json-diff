@@ -21,6 +21,7 @@
     "dist/bin"
   ],
   "scripts": {
+    "start": "tsx bin/json-diff.ts",
     "clean": "rm -rf dist",
     "build": "tsc && chmod +x dist/bin/json-diff.js",
     "prepublishOnly": "npm run clean && npm run build",

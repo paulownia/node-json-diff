@@ -1,14 +1,17 @@
 import { readFileSync } from 'node:fs';
 import { Writable } from 'node:stream';
 import { parseArgs } from 'node:util';
-import { ArrayDiffAlgorithm } from './types.js';
+import { ArrayDiffAlgorithm, isArrayDiffAlgorithm } from './types.js';
+
+export interface CliMainOptions {
+  file1: string;
+  file2: string;
+  arrayDiff: ArrayDiffAlgorithm;
+  arrayKey?: string;
+}
 
 export interface CliOptions {
-  main?: {
-    file1: string;
-    file2: string;
-    arrayDiff: ArrayDiffAlgorithm;
-  }
+  main?: CliMainOptions;
   help?: boolean;
   version?: boolean;
 }
@@ -18,7 +21,13 @@ const options = {
     type: 'string',
     default: 'elem',
     short: 'a',
-    description: 'Array diff algorithm (elem, lcs, set)',
+    description: 'Array diff algorithm (elem, lcs, set, key)',
+  },
+  'array-key': {
+    type: 'string',
+    default: 'id',
+    short: 'k',
+    description: 'Key field for key-based array comparison (default: id)',
   },
   'help': {
     type: 'boolean',
@@ -48,18 +57,22 @@ export function parseCliOptions(args: string[]): CliOptions {
   if (positionals.length !== 2) {
     throw new TypeError('Exactly two positional arguments are required: <file1> <file2>');
   }
-  const arrayDiff = values['array-diff'] || 'elem' as ArrayDiffAlgorithm;
-  if (!['elem', 'lcs', 'set'].includes(arrayDiff)) {
-    throw new TypeError(`Invalid array diff algorithm: ${arrayDiff}. Must be one of 'elem', 'lcs', or 'set'.`);
+  const arrayDiff = values['array-diff'] || 'elem';
+  if (!isArrayDiffAlgorithm(arrayDiff)) {
+    throw new TypeError(`Invalid array diff algorithm: ${arrayDiff}. Must be one of 'elem', 'lcs', 'set', or 'key'.`);
   }
 
-  return {
-    main: {
-      file1: positionals[0],
-      file2: positionals[1],
-      arrayDiff: (values['array-diff'] || 'elem') as ArrayDiffAlgorithm,
-    },
+  const main: CliMainOptions = {
+    file1: positionals[0],
+    file2: positionals[1],
+    arrayDiff,
   };
+
+  if (arrayDiff === 'key') {
+    main.arrayKey = values['array-key'] || 'id';
+  }
+
+  return { main };
 }
 
 export function printVersion(writer: Writable) {
@@ -72,7 +85,8 @@ export function printUsage(writer: Writable) {
   writer.write([
     'Usage: json-diff [options] <file1> <file2>',
     'Options:',
-    '  -a, --array-diff <algorithm>  Array diff algorithm (elem, lcs, set)',
+    '  -a, --array-diff <algorithm>  Array diff algorithm (elem, lcs, set, key)',
+    '  -k, --array-key <field>       Key field for key-based array comparison (default: id)',
     '  -h, --help                    Show help',
     '  -v, --version                 Show version',
   ].join('\n'));

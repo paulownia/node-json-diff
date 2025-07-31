@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import { describe, test } from 'node:test';
-import { pathArrayToJqQuery } from '../lib/utils/jq-query.js';
+import { pathArrayToJqQuery } from '../lib/jq-query.js';
 
 describe('toPathJqQuery', () => {
   test('should return "." for empty path', () => {
@@ -48,8 +48,33 @@ describe('toPathJqQuery', () => {
     assert.strictEqual(result, '.[0][1][2]');
   });
 
-  test('should handle mixed array and object access', () => {
+  test('should format array index with mixed elements', () => {
     const result = pathArrayToJqQuery([0, 'name', 1, 'value']);
     assert.strictEqual(result, '.[0].name[1].value');
+  });
+
+  test('should format key-based selection', () => {
+    const result = pathArrayToJqQuery(['users', { type: 'keySelect', keyField: 'id', keyValue: 3 }]);
+    assert.strictEqual(result, '.users[] | select(.id == 3)');
+  });
+
+  test('should format key-based selection with field access', () => {
+    const result = pathArrayToJqQuery(['users', { type: 'keySelect', keyField: 'id', keyValue: 2 }, 'name']);
+    assert.strictEqual(result, '.users[] | select(.id == 2) | .name');
+  });
+
+  test('should format key-based selection with nested field access', () => {
+    const result = pathArrayToJqQuery(['products', { type: 'keySelect', keyField: 'sku', keyValue: 'LAPTOP-001' }, 'details', 'specs']);
+    assert.strictEqual(result, '.products[] | select(.sku == "LAPTOP-001") | .details.specs');
+  });
+
+  test('should format key-based selection with string key containing special characters', () => {
+    const result = pathArrayToJqQuery(['items', { type: 'keySelect', keyField: 'key.name', keyValue: 'test[0]' }]);
+    assert.strictEqual(result, '.items[] | select(.key.name == "test[0]")');
+  });
+
+  test('should format nested key-based selection', () => {
+    const result = pathArrayToJqQuery(['users', { type: 'keySelect', keyField: 'id', keyValue: 3 }, 'items', { type: 'keySelect', keyField: 'type', keyValue: 'book' }]);
+    assert.strictEqual(result, '.users[] | select(.id == 3) | .items[] | select(.type == "book")');
   });
 });

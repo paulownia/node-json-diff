@@ -27,7 +27,7 @@ function main(): void {
       process.exit(1);
     }
 
-    printJsonFilesDiff(process.stdout, main.file1, main.file2, { arrayDiffAlgorithm: main.arrayDiff });
+    printJsonFilesDiff(process.stdout, main.file1, main.file2, { arrayDiffAlgorithm: main.arrayDiff, arrayKey: main.arrayKey });
 
   } catch (error: unknown) {
     if (error instanceof TypeError) { // TypeError for invalid arguments

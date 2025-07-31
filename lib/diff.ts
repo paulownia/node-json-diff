@@ -1,14 +1,14 @@
 // JSON diff logic
 import deepEqual from 'deep-equal';
 import fastArrayDiff from 'fast-array-diff';
-import { DiffItem, DiffOptions, isJsonPrimitive, JsonArray, JsonObject, JsonValue } from './types.js';
+import { DiffItem, DiffOptions, isJsonPrimitive, JsonArray, JsonObject, JsonValue, PathElement } from './types.js';
 /**
  * Create a diff between two JSON values
  */
 export function diffJsonValues(
   left: JsonValue,
   right: JsonValue,
-  pathArray: (string | number)[] = [],
+  pathArray: PathElement[] = [],
   options: DiffOptions = { arrayDiffAlgorithm: 'elem' },
 ): DiffItem[] {
   // Exclude the case where both are null
@@ -74,7 +74,7 @@ export function diffJsonValues(
 function diffJsonArrays(
   left: JsonArray,
   right: JsonArray,
-  pathArray: (string | number)[],
+  pathArray: PathElement[],
   options: DiffOptions = { arrayDiffAlgorithm: 'elem' },
 ): DiffItem[] {
   if (left.length === 0 && right.length === 0) {
@@ -89,6 +89,10 @@ function diffJsonArrays(
     return diffJsonArraysIgnoringOrder(left, right, pathArray);
   }
 
+  if (options.arrayDiffAlgorithm === 'key') {
+    return diffJsonArraysByKey(left, right, pathArray, options.arrayKey || 'id', options);
+  }
+
   return diffJsonArraysBasic(left, right, pathArray, options);
 }
 
@@ -98,7 +102,7 @@ function diffJsonArrays(
 function diffJsonObjects(
   left: JsonObject,
   right: JsonObject,
-  pathArray: (string | number)[],
+  pathArray: PathElement[],
   options: DiffOptions = { arrayDiffAlgorithm: 'elem' },
 ): DiffItem[] {
   // Compare object keys
@@ -151,7 +155,7 @@ function diffJsonObjects(
 function diffJsonArraysBasic(
   left: JsonArray,
   right: JsonArray,
-  pathArray: (string | number)[],
+  pathArray: PathElement[],
   options: DiffOptions = { arrayDiffAlgorithm: 'elem' },
 ): DiffItem[] {
   // compare length, if they are different, not compare each element
@@ -184,7 +188,7 @@ function diffJsonArraysBasic(
 function diffJsonArrayByMyers(
   left: unknown[],
   right: unknown[],
-  pathArray: (string | number)[] = [],
+  pathArray: PathElement[] = [],
 ): DiffItem[] {
   const faDiff = fastArrayDiff.diff(left, right, (left, right) => deepEqual(left, right));
   // copy pathArray to avoid mutation
@@ -220,7 +224,7 @@ function diffJsonArrayByMyers(
 function diffJsonArraysIgnoringOrder(
   left: unknown[],
   right: unknown[],
-  pathArray: (string | number)[] = [],
+  pathArray: PathElement[] = [],
 ): DiffItem[] {
   // If both arrays are empty, return no diff
   if (left.length === 0 && right.length === 0) {
@@ -272,5 +276,109 @@ function diffJsonArraysIgnoringOrder(
       path: pathArray,
     });
   }
+  return diffs;
+}
+
+/**
+ * Make a diff between two JSON arrays using key-based comparison.
+ *
+ * This is useful for arrays of objects where each object has a unique identifier field.
+ * Objects are matched by their key field value, and order is ignored.
+ * Provides detailed object-level differences for matched objects.
+ * Objects without the specified key field are compared using set comparison as fallback.
+ */
+function diffJsonArraysByKey(
+  left: unknown[],
+  right: unknown[],
+  pathArray: PathElement[],
+  keyField: string,
+  options: DiffOptions,
+): DiffItem[] {
+  // Separate objects with and without the key field
+  const leftWithKey: unknown[] = [];
+  const leftWithoutKey: unknown[] = [];
+  const rightWithKey: unknown[] = [];
+  const rightWithoutKey: unknown[] = [];
+
+  // Create maps for key-based lookup (ignoring order)
+  const leftMap = new Map<unknown, unknown>();
+  const rightMap = new Map<unknown, unknown>();
+
+  // Build left map and separate objects
+  left.forEach(item => {
+    if (typeof item === 'object' && item !== null && keyField in item) {
+      const keyValue = (item as Record<string, unknown>)[keyField];
+      // Treat undefined as missing key (JSON doesn't have undefined)
+      if (keyValue !== undefined) {
+        leftMap.set(keyValue, item);
+        leftWithKey.push(item);
+      } else {
+        leftWithoutKey.push(item);
+      }
+    } else {
+      leftWithoutKey.push(item);
+    }
+  });
+
+  // Build right map and separate objects
+  right.forEach(item => {
+    if (typeof item === 'object' && item !== null && keyField in item) {
+      const keyValue = (item as Record<string, unknown>)[keyField];
+      // Treat undefined as missing key (JSON doesn't have undefined)
+      if (keyValue !== undefined) {
+        rightMap.set(keyValue, item);
+        rightWithKey.push(item);
+      } else {
+        rightWithoutKey.push(item);
+      }
+    } else {
+      rightWithoutKey.push(item);
+    }
+  });
+
+  const diffs: DiffItem[] = [];
+
+  // Compare objects with key field using key-based comparison
+  // Find deleted items (exist in left but not in right)
+  for (const [key, value] of leftMap) {
+    if (!rightMap.has(key)) {
+      diffs.push({
+        type: 'deleted',
+        lhs: value as JsonValue,
+        rhs: undefined,
+        path: [...pathArray, { type: 'keySelect', keyField, keyValue: key }],
+      });
+    }
+  }
+
+  // Find added and modified items
+  for (const [key, rightValue] of rightMap) {
+    if (!leftMap.has(key)) {
+      // New item added
+      diffs.push({
+        type: 'added',
+        lhs: undefined,
+        rhs: rightValue as JsonValue,
+        path: [...pathArray, { type: 'keySelect', keyField, keyValue: key }],
+      });
+    } else {
+      // Item exists in both, compare detailed differences
+      const leftValue = leftMap.get(key);
+      const itemDiffs = diffJsonValues(
+        leftValue as JsonValue,
+        rightValue as JsonValue,
+        [...pathArray, { type: 'keySelect', keyField, keyValue: key }],
+        options,
+      );
+      diffs.push(...itemDiffs);
+    }
+  }
+
+  // Compare objects without key field using set comparison as fallback
+  if (leftWithoutKey.length > 0 || rightWithoutKey.length > 0) {
+    const fallbackDiffs = diffJsonArraysIgnoringOrder(leftWithoutKey, rightWithoutKey, pathArray);
+    diffs.push(...fallbackDiffs);
+  }
+
   return diffs;
 }

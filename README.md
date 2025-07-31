@@ -24,6 +24,8 @@ json-diff file1.json file2.json
   - `elem`: Compare arrays element by element. Arrays must have the same length for detailed comparison
   - `lcs`: Use Myers algorithm (Longest Common Subsequence) for array comparison
   - `set`: Treat arrays as sets, ignoring element order
+  - `key`: Compare arrays of objects by matching them using a unique identifier field
+- `--array-key` (or `-k`): Key field for key-based array comparison (default: `id`). Only used with `--array-diff key`
 
 #### Array Diff Algorithms
 
@@ -44,6 +46,12 @@ Uses the Myers algorithm to find the longest common subsequence. This provides s
 json-diff file1.json file2.json --array-diff set
 ```
 Treats arrays as sets, ignoring the order of elements. Only shows elements that exist in one array but not the other.
+
+**key (Key-based comparison):**
+```bash
+json-diff file1.json file2.json --array-diff key --array-key id
+```
+Compares arrays of objects by matching them using a unique identifier field (default: `id`). Objects with the same key value are compared for detailed differences, while objects that exist in only one array are marked as added or deleted. Order is ignored. Note: Objects that don't have the specified key field are ignored and not included in the comparison.
 
 ### Example
 

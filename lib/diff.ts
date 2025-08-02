@@ -105,37 +105,45 @@ function diffJsonObjects(
   pathArray: PathElement[],
   options: DiffOptions = { arrayDiffAlgorithm: 'elem' },
 ): DiffItem[] {
-  // Compare object keys
+  // Compare object keys, filtering out undefined values (JSON doesn't have undefined)
   const diffs: DiffItem[] = [];
+
+  // Get keys that have defined values (not undefined)
   const leftKeys = Object.keys(left);
   const rightKeys = Object.keys(right);
 
   // compare keys in both objects
   for (const key of leftKeys) {
-    if (!Object.prototype.hasOwnProperty.call(right, key)) {
-      // the key exists only in left
+    const leftValue = left[key] as JsonValue | undefined;
+    if (leftValue === undefined) continue;
+
+    const rightValue = right[key] as JsonValue | undefined;
+    if (rightValue === undefined || !Object.prototype.hasOwnProperty.call(right, key)) {
+      // the key exists only in left (right has undefined or missing)
       diffs.push({
         path: [...pathArray, key],
-        lhs: left[key] as JsonValue,
+        lhs: leftValue,
         rhs: undefined,
         type: 'deleted',
       });
     } else {
-      const leftValue = left[key] as JsonValue;
-      const rightValue = right[key] as JsonValue;
-      // the key exists in both objects, compare them as json values
+      // the key exists in both objects with defined values, compare them as json values
       const elementDiffs = diffJsonValues(leftValue, rightValue, [...pathArray, key], options);
       diffs.push(...elementDiffs);
     }
   }
 
   for (const key of rightKeys) {
-    // the key exists only in right
-    if (!Object.prototype.hasOwnProperty.call(left, key)) {
+    const rightValue = right[key] as JsonValue | undefined;
+    if (rightValue === undefined) continue;
+
+    const leftValue = left[key] as JsonValue | undefined;
+    // the key exists only in right (left has undefined or missing)
+    if (leftValue === undefined || !Object.prototype.hasOwnProperty.call(left, key)) {
       diffs.push({
         path: [...pathArray, key],
         lhs: undefined,
-        rhs: right[key] as JsonValue,
+        rhs: rightValue,
         type: 'added',
       });
     }

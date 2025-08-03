@@ -117,4 +117,36 @@ describe('diffJsonValues', () => {
     assert.strictEqual(result[0].lhs, 'John');
     assert.strictEqual(result[0].rhs, 'Jane');
   });
+
+  test('should ignore fields that have undefined values', () => {
+    const left = { name: 'John', age: undefined };
+    const right = { name: 'John', age: 30 };
+    const result = diffJsonValues(left, right);
+
+    assert.strictEqual(result.length, 1);
+    assert.strictEqual(result[0].type, 'added');  // not 'modified' because age was undefined in left
+    assert.deepStrictEqual(result[0].path, ['age']);
+    assert.strictEqual(result[0].lhs, undefined);
+    assert.strictEqual(result[0].rhs, 30);
+  });
+
+  test('should treat undefined as missing property in both directions', () => {
+    const left = { name: 'John', age: 30 };
+    const right = { name: 'John', age: undefined };
+    const result = diffJsonValues(left, right);
+
+    assert.strictEqual(result.length, 1);
+    assert.strictEqual(result[0].type, 'deleted');  // age was removed (became undefined)
+    assert.deepStrictEqual(result[0].path, ['age']);
+    assert.strictEqual(result[0].lhs, 30);
+    assert.strictEqual(result[0].rhs, undefined);
+  });
+
+  test('should ignore both sides when both have undefined values', () => {
+    const left = { name: 'John', age: undefined };
+    const right = { name: 'John', age: undefined };
+    const result = diffJsonValues(left, right);
+
+    assert.strictEqual(result.length, 0);  // no difference since both are undefined
+  });
 });

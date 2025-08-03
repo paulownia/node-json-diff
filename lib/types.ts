@@ -24,6 +24,10 @@ export type ParserOptions = {
   acceptJsonc?: boolean;
 };
 
+export type OutputOptions = {
+  color?: boolean,
+};
+
 export type JsonNull = null;
 
 export type JsonPrimitive = string | number | boolean;

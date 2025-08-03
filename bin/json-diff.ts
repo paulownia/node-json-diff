@@ -31,7 +31,12 @@ function main(): void {
       process.stdout,
       main.file1,
       main.file2,
-      { arrayDiffAlgorithm: main.arrayDiff, arrayKey: main.arrayKey, acceptJsonc: main.acceptJsonc || false },
+      {
+        arrayDiffAlgorithm: main.arrayDiff,
+        arrayKey: main.arrayKey,
+        acceptJsonc: main.acceptJsonc,
+        color: main.color,
+      },
     );
 
   } catch (error: unknown) {

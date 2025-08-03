@@ -5,7 +5,28 @@ import path from 'node:path';
 import { Writable } from 'node:stream';
 import { diffJsonValues } from './diff.js';
 import { pathArrayToJqQuery } from './jq-query.js';
-import { DiffItem, DiffOptions, JsonValue, ParserOptions } from './types.js';
+import { DiffItem, DiffOptions, JsonValue, OutputOptions, ParserOptions } from './types.js';
+
+/**
+ * Configure chalk color output based on CLI options and environment variables
+ *
+ * Environment variable support:
+ * - FORCE_COLOR: handled automatically by chalk (FORCE_COLOR=1 enables, FORCE_COLOR=0 disables)
+ * - NO_COLOR: handled manually (chalk doesn't support this standard)
+ *
+ * Priority: CLI options > Environment variables > TTY detection (chalk automatic)
+ */
+export function configureChalkColors(forceColor?: boolean): void {
+  if (forceColor === true) {
+    chalk.level = 3; // Force full color support
+  } else if (forceColor === false) {
+    chalk.level = 0; // Disable all colors
+  } else if (process.env.NO_COLOR) {
+    // NO_COLOR is not supported by chalk, handle it manually
+    chalk.level = 0; // Disable all colors
+  }
+  // Otherwise, use chalk's automatic detection (includes FORCE_COLOR)
+}
 
 export function diffJsonFiles(file1: string, file2: string, options: DiffOptions & ParserOptions = { arrayDiffAlgorithm: 'elem', acceptJsonc: false }): DiffItem[] {
   const parseFunc = options.acceptJsonc ? parseJsonc : JSON.parse;
@@ -34,7 +55,10 @@ export function printJsonFilesDiff(
   out: Writable,
   file1: string,
   file2: string,
-  options: DiffOptions & ParserOptions = { arrayDiffAlgorithm: 'elem', acceptJsonc: false }): void {
+  options: DiffOptions & ParserOptions & OutputOptions = { arrayDiffAlgorithm: 'elem', acceptJsonc: false }): void {
+
+  // Configure colors before printing
+  configureChalkColors(options.color);
 
   const diffList = diffJsonFiles(file1, file2, options);
 

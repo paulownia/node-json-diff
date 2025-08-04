@@ -124,8 +124,11 @@ export function printUsage(writer: Writable) {
     '  -h, --help                    Show help',
     '  -v, --version                 Show version',
     '  -c, --jsonc                   Enable JSONC support (comments in JSON)',
+    'Environment Variables:',
+    '  FORCE_COLOR=1                 Force color output (FORCE_COLOR=0 disables)',
+    '  NO_COLOR=1                    Disable color output (any value disables)',
+    '',
   ].join('\n'));
-  writer.write('\n');
 }
 
 function loadPackageJson(): { version: string, description: string } {

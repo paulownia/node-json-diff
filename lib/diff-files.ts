@@ -47,7 +47,7 @@ function parseJsonFile(parseFunc: (notation: string) => JsonValue, fileName: str
       if (e.code === 'EISDIR') throw new Error(`Expected a file but found a directory: ${e.path}`);
       if (e.code === 'EACCES') throw new Error(`Permission denied: ${e.path}`);
     }
-    throw new Error(`Unexpected error: ${e instanceof Error ? e.message : String(e)}`);;
+    throw new Error(`Unexpected error: ${e instanceof Error ? e.message : String(e)}`);
   }
 }
 

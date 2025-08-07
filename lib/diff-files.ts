@@ -1,46 +1,55 @@
 import chalk from 'chalk';
+import { parse as parseJsonc } from 'jsonc-parser';
 import fs from 'node:fs';
 import path from 'node:path';
 import { Writable } from 'node:stream';
 import { diffJsonValues } from './diff.js';
 import { pathArrayToJqQuery } from './jq-query.js';
-import { DiffItem, DiffOptions } from './types.js';
+import { DiffItem, DiffOptions, JsonValue, ParserOptions } from './types.js';
 
-export function diffJsonFiles(file1: string, file2: string, options: DiffOptions = { arrayDiffAlgorithm: 'elem' }): DiffItem[] {
-  const json1 = JSON.parse(fs.readFileSync(path.resolve(file1), 'utf8'));
-  const json2 = JSON.parse(fs.readFileSync(path.resolve(file2), 'utf8'));
+export function diffJsonFiles(file1: string, file2: string, options: DiffOptions & ParserOptions = { arrayDiffAlgorithm: 'elem', acceptJsonc: false }): DiffItem[] {
+  const parseFunc = options.acceptJsonc ? parseJsonc : JSON.parse;
+  const json1 = parseJsonFile(parseFunc, file1);
+  const json2 = parseJsonFile(parseFunc, file2);
   return diffJsonValues(json1, json2, [], options);
 }
 
-export function printJsonFilesDiff(out: Writable, file1: string, file2: string, options: DiffOptions = { arrayDiffAlgorithm: 'elem' }): void {
+function parseJsonFile(parseFunc: (notation: string) => JsonValue, fileName: string): JsonValue {
   try {
-
-    const diffList = diffJsonFiles(file1, file2, options);
-
-    out.write(chalk.cyan(`--- ${file1}`) + '\n');
-    out.write(chalk.cyan(`+++ ${file2}`) + '\n');
-
-    for (const diffItem of diffList) {
-      out.write(`@ ${pathArrayToJqQuery(diffItem.path)} (${diffItem.type})\n`);
-
-      if (diffItem.lhs !== undefined) {
-        out.write(chalk.red(`  - ${JSON.stringify(diffItem.lhs, null, 0)}`) + '\n');
-      }
-      if (diffItem.rhs !== undefined) {
-        out.write(chalk.green(`  + ${JSON.stringify(diffItem.rhs, null, 0)}`) + '\n');
-      }
-    }
-
+    return parseFunc(fs.readFileSync(path.resolve(fileName), 'utf8'));
   } catch (e) {
     if (e instanceof SyntaxError) {
-      throw new Error(`Not a valid JSON file: ${e.message}`);
+      throw new Error(`Not a valid JSON file: ${fileName}`);
     }
     if (isNodeErrno(e)) {
       if (e.code === 'ENOENT') throw new Error(`File not found: ${e.path}`);
       if (e.code === 'EISDIR') throw new Error(`Expected a file but found a directory: ${e.path}`);
       if (e.code === 'EACCES') throw new Error(`Permission denied: ${e.path}`);
     }
-    throw new Error(`Unexpected error: ${e instanceof Error ? e.message : String(e)}`);
+    throw new Error(`Unexpected error: ${e instanceof Error ? e.message : String(e)}`);;
+  }
+}
+
+export function printJsonFilesDiff(
+  out: Writable,
+  file1: string,
+  file2: string,
+  options: DiffOptions & ParserOptions = { arrayDiffAlgorithm: 'elem', acceptJsonc: false }): void {
+
+  const diffList = diffJsonFiles(file1, file2, options);
+
+  out.write(chalk.cyan(`--- ${file1}`) + '\n');
+  out.write(chalk.cyan(`+++ ${file2}`) + '\n');
+
+  for (const diffItem of diffList) {
+    out.write(`@ ${pathArrayToJqQuery(diffItem.path)} (${diffItem.type})\n`);
+
+    if (diffItem.lhs !== undefined) {
+      out.write(chalk.red(`  - ${JSON.stringify(diffItem.lhs, null, 0)}`) + '\n');
+    }
+    if (diffItem.rhs !== undefined) {
+      out.write(chalk.green(`  + ${JSON.stringify(diffItem.rhs, null, 0)}`) + '\n');
+    }
   }
 }
 

@@ -27,11 +27,18 @@ function main(): void {
       process.exit(1);
     }
 
-    printJsonFilesDiff(process.stdout, main.file1, main.file2, { arrayDiffAlgorithm: main.arrayDiff, arrayKey: main.arrayKey });
+    printJsonFilesDiff(
+      process.stdout,
+      main.file1,
+      main.file2,
+      { arrayDiffAlgorithm: main.arrayDiff, arrayKey: main.arrayKey, acceptJsonc: main.acceptJsonc || false },
+    );
 
   } catch (error: unknown) {
     if (error instanceof TypeError) { // TypeError for invalid arguments
       printUsage(process.stderr);
+    } else if (error instanceof SyntaxError) {
+      process.stderr.write(`Error: Not a valid JSON file: ${error.message}\n`);
     } else {
       process.stderr.write(`Error: ${error instanceof Error ? error.message : error}\n`);
     }

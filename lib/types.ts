@@ -20,6 +20,10 @@ export type DiffOptions = {
   arrayKey?: string;
 };
 
+export type ParserOptions = {
+  acceptJsonc?: boolean;
+};
+
 export type JsonNull = null;
 
 export type JsonPrimitive = string | number | boolean;

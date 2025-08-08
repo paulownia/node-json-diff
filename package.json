@@ -53,7 +53,8 @@
   "dependencies": {
     "chalk": "^5.4.1",
     "deep-equal": "^2.2.3",
-    "fast-array-diff": "^1.1.0"
+    "fast-array-diff": "^1.1.0",
+    "jsonc-parser": "^3.3.1"
   },
   "publishConfig": {
     "access": "public"

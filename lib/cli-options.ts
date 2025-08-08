@@ -8,12 +8,14 @@ export interface CliMainOptions {
   file2: string;
   arrayDiff: ArrayDiffAlgorithm;
   arrayKey?: string;
+  acceptJsonc?: boolean; // Whether to accept JSONC (JSON with comments)
 }
 
 export interface CliOptions {
   main?: CliMainOptions;
   help?: boolean;
   version?: boolean;
+  acceptJsonc?: boolean; // Whether to accept JSONC (JSON with comments)
 }
 
 const options = {
@@ -28,6 +30,11 @@ const options = {
     default: 'id',
     short: 'k',
     description: 'Key field for key-based array comparison (default: id)',
+  },
+  'jsonc': {
+    type: 'boolean',
+    default: false,
+    description: 'Enable JSONC support (comments in JSON)',
   },
   'help': {
     type: 'boolean',
@@ -66,6 +73,7 @@ export function parseCliOptions(args: string[]): CliOptions {
     file1: positionals[0],
     file2: positionals[1],
     arrayDiff,
+    acceptJsonc: values['jsonc'] || false,
   };
 
   if (arrayDiff === 'key') {
@@ -89,6 +97,7 @@ export function printUsage(writer: Writable) {
     '  -k, --array-key <field>       Key field for key-based array comparison (default: id)',
     '  -h, --help                    Show help',
     '  -v, --version                 Show version',
+    '  -c, --jsonc                   Enable JSONC support (comments in JSON)',
   ].join('\n'));
   writer.write('\n');
 }

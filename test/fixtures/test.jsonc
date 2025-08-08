@@ -1,0 +1,9 @@
+{
+  // This is a JSONC file with comments
+  "name": "John Doe",
+  "age": 30, // Age in years
+  "city": "New York",
+  /* Multi-line comment
+     describing hobbies */
+  "hobbies": ["reading", "coding"]
+}

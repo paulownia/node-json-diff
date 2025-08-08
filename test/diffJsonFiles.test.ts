@@ -75,4 +75,57 @@ describe('printJsonFilesDiff', () => {
       }
     }
   });
+
+  test('should throw error when acceptJsonc is false and JSONC file is provided', () => {
+    const jsoncFile = path.join(__dirname, 'fixtures', 'test.jsonc');
+    const jsonFile = path.join(__dirname, 'fixtures', 'simple-right.json');
+
+    // Test with acceptJsonc: false (default)
+    assert.throws(() => {
+      printJsonFilesDiff(nullWritable, jsoncFile, jsonFile, { arrayDiffAlgorithm: 'elem', acceptJsonc: false });
+    }, /Not a valid JSON file/);
+
+    // Test with no options (defaults to acceptJsonc: false)
+    assert.throws(() => {
+      printJsonFilesDiff(nullWritable, jsoncFile, jsonFile);
+    }, /Not a valid JSON file/);
+  });
+
+  test('should not throw error when acceptJsonc is true and JSONC file is provided', () => {
+    const jsoncFile1 = path.join(__dirname, 'fixtures', 'test.jsonc');
+    const jsoncFile2 = path.join(__dirname, 'fixtures', 'test2.jsonc');
+
+    // Should not throw with acceptJsonc: true
+    assert.doesNotThrow(() => {
+      const logs: string[] = [];
+      const arrayWritable = new ArrayWritable(logs);
+      printJsonFilesDiff(arrayWritable, jsoncFile1, jsoncFile2, { arrayDiffAlgorithm: 'elem', acceptJsonc: true });
+
+      // Verify that output was generated
+      assert(logs.length > 0, 'Should generate output for JSONC files');
+
+      // Verify file headers are present
+      const output = logs.join('\n');
+      assert(output.includes('---'), 'Should include left file indicator');
+      assert(output.includes('+++'), 'Should include right file indicator');
+    });
+  });
+
+  test('should properly parse and diff JSONC files when acceptJsonc is true', () => {
+    const jsoncFile1 = path.join(__dirname, 'fixtures', 'test.jsonc');
+    const jsoncFile2 = path.join(__dirname, 'fixtures', 'test2.jsonc');
+
+    const logs: string[] = [];
+    const arrayWritable = new ArrayWritable(logs);
+
+    printJsonFilesDiff(arrayWritable, jsoncFile1, jsoncFile2, { arrayDiffAlgorithm: 'elem', acceptJsonc: true });
+
+    const output = logs.join('\n');
+
+    // Verify that differences are detected correctly
+    assert(output.includes('.name'), 'Should detect name change from John Doe to Jane Smith');
+    assert(output.includes('.age'), 'Should detect age change from 30 to 25');
+    assert(output.includes('.city'), 'Should detect city change from New York to San Francisco');
+    assert(output.includes('.hobbies'), 'Should detect hobbies change');
+  });
 });

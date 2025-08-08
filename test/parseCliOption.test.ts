@@ -11,6 +11,7 @@ describe('parseCliOptions', () => {
         file1: 'file1.json',
         file2: 'file2.json',
         arrayDiff: 'elem',
+        acceptJsonc: false,
       },
     });
   });
@@ -55,6 +56,7 @@ describe('parseCliOptions', () => {
         file1: 'file1.json',
         file2: 'file2.json',
         arrayDiff: 'lcs',
+        acceptJsonc: false,
       },
     });
   });
@@ -67,6 +69,7 @@ describe('parseCliOptions', () => {
         file1: 'file1.json',
         file2: 'file2.json',
         arrayDiff: 'set',
+        acceptJsonc: false,
       },
     });
   });
@@ -110,6 +113,7 @@ describe('parseCliOptions', () => {
     algorithms.forEach(algorithm => {
       const result = parseCliOptions(['--array-diff', algorithm, 'file1.json', 'file2.json']);
       assert.strictEqual(result.main?.arrayDiff, algorithm);
+      assert.strictEqual(result.main?.acceptJsonc, false);
     });
   });
 
@@ -130,8 +134,24 @@ describe('parseCliOptions', () => {
     });
   });
 
+  test('should prioritize help over jsonc option', () => {
+    const result = parseCliOptions(['--help', '--jsonc', 'file1.jsonc', 'file2.jsonc']);
+
+    assert.deepStrictEqual(result, {
+      help: true,
+    });
+  });
+
   test('should prioritize version over file arguments but not help', () => {
     const result = parseCliOptions(['--version', 'file1.json', 'file2.json']);
+
+    assert.deepStrictEqual(result, {
+      version: true,
+    });
+  });
+
+  test('should prioritize version over jsonc option but not help', () => {
+    const result = parseCliOptions(['--version', '--jsonc', 'file1.jsonc', 'file2.jsonc']);
 
     assert.deepStrictEqual(result, {
       version: true,
@@ -146,6 +166,7 @@ describe('parseCliOptions', () => {
         file1: 'file1.json',
         file2: 'file2.json',
         arrayDiff: 'lcs',
+        acceptJsonc: false,
       },
     });
   });
@@ -158,6 +179,52 @@ describe('parseCliOptions', () => {
         file1: 'file1.json',
         file2: 'file2.json',
         arrayDiff: 'set',
+        acceptJsonc: false,
+      },
+    });
+  });
+
+  test('should parse jsonc option with long flag', () => {
+    const result = parseCliOptions(['--jsonc', 'file1.jsonc', 'file2.jsonc']);
+
+    assert.deepStrictEqual(result, {
+      main: {
+        file1: 'file1.jsonc',
+        file2: 'file2.jsonc',
+        arrayDiff: 'elem',
+        acceptJsonc: true,
+      },
+    });
+  });
+
+  test('should default acceptJsonc to false when not specified', () => {
+    const result = parseCliOptions(['file1.json', 'file2.json']);
+
+    assert.strictEqual(result.main?.acceptJsonc, false);
+  });
+
+  test('should handle jsonc option with other options', () => {
+    const result = parseCliOptions(['--jsonc', '--array-diff', 'lcs', 'file1.jsonc', 'file2.jsonc']);
+
+    assert.deepStrictEqual(result, {
+      main: {
+        file1: 'file1.jsonc',
+        file2: 'file2.jsonc',
+        arrayDiff: 'lcs',
+        acceptJsonc: true,
+      },
+    });
+  });
+
+  test('should handle jsonc option in different positions', () => {
+    const result = parseCliOptions(['file1.jsonc', '--jsonc', 'file2.jsonc']);
+
+    assert.deepStrictEqual(result, {
+      main: {
+        file1: 'file1.jsonc',
+        file2: 'file2.jsonc',
+        arrayDiff: 'elem',
+        acceptJsonc: true,
       },
     });
   });

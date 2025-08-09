@@ -16,7 +16,7 @@ export const ArrayDiffAlgorithms = ['lcs', 'set', 'elem', 'key'] as const;
 export type ArrayDiffAlgorithm = typeof ArrayDiffAlgorithms[number];
 
 export type DiffOptions = {
-  arrayDiffAlgorithm: ArrayDiffAlgorithm;
+  arrayDiffAlgorithm?: ArrayDiffAlgorithm;
   arrayKey?: string;
 };
 

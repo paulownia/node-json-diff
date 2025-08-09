@@ -28,7 +28,7 @@ export function configureChalkColors(forceColor?: boolean): void {
   // Otherwise, use chalk's automatic detection (includes FORCE_COLOR)
 }
 
-export function diffJsonFiles(file1: string, file2: string, options: DiffOptions & ParserOptions = { arrayDiffAlgorithm: 'elem', acceptJsonc: false }): DiffItem[] {
+export function diffJsonFiles(file1: string, file2: string, options: DiffOptions & ParserOptions = {}): DiffItem[] {
   const parseFunc = options.acceptJsonc ? parseJsonc : JSON.parse;
   const json1 = parseJsonFile(parseFunc, file1);
   const json2 = parseJsonFile(parseFunc, file2);
@@ -55,7 +55,8 @@ export function printJsonFilesDiff(
   out: Writable,
   file1: string,
   file2: string,
-  options: DiffOptions & ParserOptions & OutputOptions = { arrayDiffAlgorithm: 'elem', acceptJsonc: false }): void {
+  options: DiffOptions & ParserOptions & OutputOptions = {},
+): void {
 
   // Configure colors before printing
   configureChalkColors(options.color);

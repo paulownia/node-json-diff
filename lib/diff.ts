@@ -9,7 +9,7 @@ export function diffJsonValues(
   left: JsonValue,
   right: JsonValue,
   pathArray: PathElement[] = [],
-  options: DiffOptions = { arrayDiffAlgorithm: 'elem' },
+  options: DiffOptions = {},
 ): DiffItem[] {
   // Exclude the case where both are null
   if (left === null && right === null) {
@@ -75,25 +75,22 @@ function diffJsonArrays(
   left: JsonArray,
   right: JsonArray,
   pathArray: PathElement[],
-  options: DiffOptions = { arrayDiffAlgorithm: 'elem' },
+  options: DiffOptions = {},
 ): DiffItem[] {
   if (left.length === 0 && right.length === 0) {
     return []; // no difference
   }
 
-  if (options.arrayDiffAlgorithm === 'lcs') {
-    return diffJsonArrayByMyers(left, right, pathArray);
+  switch (options.arrayDiffAlgorithm) {
+    case 'lcs':
+      return diffJsonArrayByMyers(left, right, pathArray);
+    case 'set':
+      return diffJsonArraysIgnoringOrder(left, right, pathArray);
+    case 'key':
+      return diffJsonArraysByKey(left, right, pathArray, options.arrayKey || 'id', options);
+    default:  // 'elem' or any other value, including undefined
+      return diffJsonArraysBasic(left, right, pathArray, options);
   }
-
-  if (options.arrayDiffAlgorithm === 'set') {
-    return diffJsonArraysIgnoringOrder(left, right, pathArray);
-  }
-
-  if (options.arrayDiffAlgorithm === 'key') {
-    return diffJsonArraysByKey(left, right, pathArray, options.arrayKey || 'id', options);
-  }
-
-  return diffJsonArraysBasic(left, right, pathArray, options);
 }
 
 /**
@@ -103,7 +100,7 @@ function diffJsonObjects(
   left: JsonObject,
   right: JsonObject,
   pathArray: PathElement[],
-  options: DiffOptions = { arrayDiffAlgorithm: 'elem' },
+  options: DiffOptions = {},
 ): DiffItem[] {
   // Compare object keys, filtering out undefined values (JSON doesn't have undefined)
   const diffs: DiffItem[] = [];

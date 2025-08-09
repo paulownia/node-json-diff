@@ -26,6 +26,29 @@ json-diff file1.json file2.json
   - `set`: Treat arrays as sets, ignoring element order
   - `key`: Compare arrays of objects by matching them using a unique identifier field
 - `--array-key` (or `-k`): Key field for key-based array comparison (default: `id`). Only used with `--array-diff key`
+- `--jsonc`: Enable JSONC support (comments in JSON)
+- `--color`: Force color output even when piped or redirected to a file
+- `--no-color`: Disable color output completely
+- `--help` (or `-h`): Show help message
+- `--version` (or `-v`): Show version number
+
+#### Color Output
+
+By default, colors are automatically enabled for terminal output and disabled when output is piped or redirected. You can override this behavior:
+
+```bash
+# Force colors even when redirecting to a file
+json-diff --color file1.json file2.json > diff.txt
+
+# Disable colors completely
+json-diff --no-color file1.json file2.json
+```
+
+You can also control colors using environment variables:
+- `FORCE_COLOR=1`: Force color output (set to `0` to disable) - compatible with chalk library
+- `NO_COLOR=1`: Disable color output (any value disables colors) - follows NO_COLOR standard
+
+Priority: CLI options > NO_COLOR > FORCE_COLOR > Automatic detection
 
 #### Array Diff Algorithms
 
@@ -134,12 +157,12 @@ Compare two JSON files and output the differences to console.
 - `file1` (string): Path to the first JSON file
 - `file2` (string): Path to the second JSON file
 
-### `diffJsonFiles(json1, json2)`
+### `diffJsonFiles(file1, file2)`
 
 Compare two JSON files and return the differences as an array.
 
-- `json1` (any): First JSON object
-- `json2` (any): Second JSON object
+- `file1` (string): Path to the first JSON file
+- `file2` (string): Path to the second JSON file
 - Returns: Array of difference objects
 
 ### `diffJsonValues(json1, json2)`

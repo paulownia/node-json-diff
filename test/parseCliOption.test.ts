@@ -228,4 +228,41 @@ describe('parseCliOptions', () => {
       },
     });
   });
+
+  test('should parse color option', () => {
+    const result = parseCliOptions(['--color', 'file1.json', 'file2.json']);
+
+    assert.deepStrictEqual(result, {
+      main: {
+        file1: 'file1.json',
+        file2: 'file2.json',
+        arrayDiff: 'elem',
+        acceptJsonc: false,
+        color: true,
+      },
+    });
+  });
+
+  test('should parse no-color option', () => {
+    const result = parseCliOptions(['--no-color', 'file1.json', 'file2.json']);
+
+    assert.deepStrictEqual(result, {
+      main: {
+        file1: 'file1.json',
+        file2: 'file2.json',
+        arrayDiff: 'elem',
+        acceptJsonc: false,
+        color: false,
+      },
+    });
+  });
+
+  test('should throw error when both color and no-color are specified', () => {
+    assert.throws(() => {
+      parseCliOptions(['--color', '--no-color', 'file1.json', 'file2.json']);
+    }, {
+      name: 'TypeError',
+      message: 'Cannot specify both --color and --no-color options',
+    });
+  });
 });

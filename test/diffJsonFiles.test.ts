@@ -82,7 +82,7 @@ describe('printJsonFilesDiff', () => {
 
     // Test with acceptJsonc: false (default)
     assert.throws(() => {
-      printJsonFilesDiff(nullWritable, jsoncFile, jsonFile, { arrayDiffAlgorithm: 'elem', acceptJsonc: false });
+      printJsonFilesDiff(nullWritable, jsoncFile, jsonFile, { acceptJsonc: false });
     }, /Not a valid JSON file/);
 
     // Test with no options (defaults to acceptJsonc: false)
@@ -99,7 +99,7 @@ describe('printJsonFilesDiff', () => {
     assert.doesNotThrow(() => {
       const logs: string[] = [];
       const arrayWritable = new ArrayWritable(logs);
-      printJsonFilesDiff(arrayWritable, jsoncFile1, jsoncFile2, { arrayDiffAlgorithm: 'elem', acceptJsonc: true });
+      printJsonFilesDiff(arrayWritable, jsoncFile1, jsoncFile2, { acceptJsonc: true });
 
       // Verify that output was generated
       assert(logs.length > 0, 'Should generate output for JSONC files');
@@ -118,7 +118,7 @@ describe('printJsonFilesDiff', () => {
     const logs: string[] = [];
     const arrayWritable = new ArrayWritable(logs);
 
-    printJsonFilesDiff(arrayWritable, jsoncFile1, jsoncFile2, { arrayDiffAlgorithm: 'elem', acceptJsonc: true });
+    printJsonFilesDiff(arrayWritable, jsoncFile1, jsoncFile2, { acceptJsonc: true });
 
     const output = logs.join('\n');
 

@@ -1,6 +1,6 @@
 import js from '@eslint/js';
-import tseslint from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
@@ -34,7 +34,9 @@ export default tseslint.config(
 
       // Stylistic rules
       '@stylistic/semi': 'error',
+      '@stylistic/semi-spacing': 'error',
       '@stylistic/comma-dangle': ['error', 'always-multiline'],
+      '@stylistic/comma-spacing': 'error',
       '@stylistic/quotes': ['error', 'single'],
       '@stylistic/block-spacing': 'error',
       '@stylistic/indent': ['error', 2],
@@ -57,6 +59,10 @@ export default tseslint.config(
         maxEOF: 0,
         maxBOF: 0,
       }],
+      '@stylistic/object-property-newline': ['error', {
+        allowAllPropertiesOnSameLine: true,
+      }],
+      '@stylistic/array-element-newline': ['error', 'consistent'],
     },
   },
   {

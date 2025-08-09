@@ -9,6 +9,7 @@ export interface CliMainOptions {
   arrayDiff: ArrayDiffAlgorithm;
   arrayKey?: string;
   acceptJsonc?: boolean; // Whether to accept JSONC (JSON with comments)
+  color?: boolean;
 }
 
 export interface CliOptions {
@@ -35,6 +36,14 @@ const options = {
     type: 'boolean',
     default: false,
     description: 'Enable JSONC support (comments in JSON)',
+  },
+  'color': {
+    type: 'boolean',
+    description: 'Force color output even when piped or redirected',
+  },
+  'no-color': {
+    type: 'boolean',
+    description: 'Disable color output',
   },
   'help': {
     type: 'boolean',
@@ -64,6 +73,12 @@ export function parseCliOptions(args: string[]): CliOptions {
   if (positionals.length !== 2) {
     throw new TypeError('Exactly two positional arguments are required: <file1> <file2>');
   }
+
+  // Check for conflicting color options
+  if (values['color'] && values['no-color']) {
+    throw new TypeError('Cannot specify both --color and --no-color options');
+  }
+
   const arrayDiff = values['array-diff'] || 'elem';
   if (!isArrayDiffAlgorithm(arrayDiff)) {
     throw new TypeError(`Invalid array diff algorithm: ${arrayDiff}. Must be one of 'elem', 'lcs', 'set', or 'key'.`);
@@ -80,6 +95,14 @@ export function parseCliOptions(args: string[]): CliOptions {
     main.arrayKey = values['array-key'] || 'id';
   }
 
+  // Handle color options (CLI options take precedence over environment variables)
+  if (values['no-color']) {
+    main.color = false;
+  } else if (values['color']) {
+    main.color = true;
+  }
+  // If neither option is specified, main.color remains undefined and will use environment variables
+
   return { main };
 }
 
@@ -95,11 +118,16 @@ export function printUsage(writer: Writable) {
     'Options:',
     '  -a, --array-diff <algorithm>  Array diff algorithm (elem, lcs, set, key)',
     '  -k, --array-key <field>       Key field for key-based array comparison (default: id)',
+    '      --color                   Force color output even when piped or redirected',
+    '      --no-color                Disable color output',
+    '      --jsonc                   Enable JSONC support (comments in JSON)',
     '  -h, --help                    Show help',
     '  -v, --version                 Show version',
-    '  -c, --jsonc                   Enable JSONC support (comments in JSON)',
+    'Environment Variables:',
+    '  FORCE_COLOR=1                 Force color output (FORCE_COLOR=0 disables)',
+    '  NO_COLOR=1                    Disable color output (any value disables)',
+    '',
   ].join('\n'));
-  writer.write('\n');
 }
 
 function loadPackageJson(): { version: string, description: string } {

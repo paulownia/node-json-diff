@@ -26,7 +26,8 @@ json-diff file1.json file2.json
   - `set`: Treat arrays as sets, ignoring element order
   - `key`: Compare arrays of objects by matching them using a unique identifier field
 - `--array-key` (or `-k`): Key field for key-based array comparison (default: `id`). Only used with `--array-diff key`
-- `--color` (or `-c`): Force color output even when piped or redirected to a file
+- `--jsonc`: Enable JSONC support (comments in JSON)
+- `--color`: Force color output even when piped or redirected to a file
 - `--no-color`: Disable color output completely
 - `--help` (or `-h`): Show help message
 - `--version` (or `-v`): Show version number

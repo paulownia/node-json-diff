@@ -39,7 +39,6 @@ const options = {
   },
   'color': {
     type: 'boolean',
-    short: 'c',
     description: 'Force color output even when piped or redirected',
   },
   'no-color': {
@@ -119,11 +118,11 @@ export function printUsage(writer: Writable) {
     'Options:',
     '  -a, --array-diff <algorithm>  Array diff algorithm (elem, lcs, set, key)',
     '  -k, --array-key <field>       Key field for key-based array comparison (default: id)',
-    '  -c, --color                   Force color output even when piped or redirected',
+    '      --color                   Force color output even when piped or redirected',
     '      --no-color                Disable color output',
+    '      --jsonc                   Enable JSONC support (comments in JSON)',
     '  -h, --help                    Show help',
     '  -v, --version                 Show version',
-    '  -c, --jsonc                   Enable JSONC support (comments in JSON)',
     'Environment Variables:',
     '  FORCE_COLOR=1                 Force color output (FORCE_COLOR=0 disables)',
     '  NO_COLOR=1                    Disable color output (any value disables)',

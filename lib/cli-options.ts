@@ -114,7 +114,25 @@ export function printVersion(writer: Writable) {
   writer.write('\n');
 }
 
-// Helper function: Build flag part
+export function printUsage(writer: Writable) {
+  writer.write('Usage: json-diff [options] <file1> <file2>\n');
+  writer.write('Options:\n');
+
+  // Calculate maximum flag length
+  const padSize = getMaxFlagPartLength(options);
+
+  // Auto-generate from options
+  Object.entries(options).forEach(([key, config]) => {
+    const flagPart = buildFlagPart(key, config);
+    writer.write(`  ${flagPart.padEnd(padSize)}   ${config.description}\n`);
+  });
+
+  writer.write('Environment Variables:\n');
+  writer.write(`  ${'FORCE_COLOR=1'.padEnd(padSize)}   Force color output (FORCE_COLOR=0 disables)\n`);
+  writer.write(`  ${'NO_COLOR=1'.padEnd(padSize)}   Disable color output (any value disables)\n`);
+  writer.write('\n');
+}
+
 function buildFlagPart(key: string, config: (typeof options)[keyof typeof options]): string {
   const shortFlag = ('short' in config && config.short) ? `-${config.short}, ` : '    ';
   const longFlag = `--${key}`;
@@ -124,27 +142,10 @@ function buildFlagPart(key: string, config: (typeof options)[keyof typeof option
   return `${shortFlag}${longFlag}${argPlaceholder}`;
 }
 
-export function printUsage(writer: Writable) {
-  writer.write('Usage: json-diff [options] <file1> <file2>\n');
-  writer.write('Options:\n');
-
-  // Calculate maximum flag length
-  const maxFlagLength = Object.entries(options)
+function getMaxFlagPartLength(configs: typeof options): number {
+  return Object.entries(configs)
     .map(([key, config]) => buildFlagPart(key, config).length)
     .reduce((max, current) => Math.max(max, current), 0);
-
-  const paddingWidth = maxFlagLength + 2; // Add 2 for extra padding
-
-  // Auto-generate from options
-  Object.entries(options).forEach(([key, config]) => {
-    const flagPart = buildFlagPart(key, config);
-    writer.write(`  ${flagPart.padEnd(paddingWidth)} ${config.description}\n`);
-  });
-
-  writer.write('Environment Variables:\n');
-  writer.write(`  ${'FORCE_COLOR=1'.padEnd(paddingWidth)} Force color output (FORCE_COLOR=0 disables)\n`);
-  writer.write(`  ${'NO_COLOR=1'.padEnd(paddingWidth)} Disable color output (any value disables)\n`);
-  writer.write('\n');
 }
 
 function loadPackageJson(): { version: string, description: string } {

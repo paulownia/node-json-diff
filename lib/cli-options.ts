@@ -25,12 +25,14 @@ const options = {
     default: 'elem',
     short: 'a',
     description: 'Array diff algorithm (elem, lcs, set, key)',
+    placeholder: 'algorithm',
   },
   'array-key': {
     type: 'string',
     default: 'id',
     short: 'k',
     description: 'Key field for key-based array comparison (default: id)',
+    placeholder: 'field',
   },
   'jsonc': {
     type: 'boolean',
@@ -113,21 +115,37 @@ export function printVersion(writer: Writable) {
 }
 
 export function printUsage(writer: Writable) {
-  writer.write([
-    'Usage: json-diff [options] <file1> <file2>',
-    'Options:',
-    '  -a, --array-diff <algorithm>  Array diff algorithm (elem, lcs, set, key)',
-    '  -k, --array-key <field>       Key field for key-based array comparison (default: id)',
-    '      --color                   Force color output even when piped or redirected',
-    '      --no-color                Disable color output',
-    '      --jsonc                   Enable JSONC support (comments in JSON)',
-    '  -h, --help                    Show help',
-    '  -v, --version                 Show version',
-    'Environment Variables:',
-    '  FORCE_COLOR=1                 Force color output (FORCE_COLOR=0 disables)',
-    '  NO_COLOR=1                    Disable color output (any value disables)',
-    '',
-  ].join('\n'));
+  writer.write('Usage: json-diff [options] <file1> <file2>\n');
+  writer.write('Options:\n');
+
+  // Calculate maximum flag length
+  const padSize = getMaxFlagPartLength(options);
+
+  // Auto-generate from options
+  Object.entries(options).forEach(([key, config]) => {
+    const flagPart = buildFlagPart(key, config);
+    writer.write(`  ${flagPart.padEnd(padSize)}   ${config.description}\n`);
+  });
+
+  writer.write('Environment Variables:\n');
+  writer.write(`  ${'FORCE_COLOR=1'.padEnd(padSize)}   Force color output (FORCE_COLOR=0 disables)\n`);
+  writer.write(`  ${'NO_COLOR=1'.padEnd(padSize)}   Disable color output (any value disables)\n`);
+  writer.write('\n');
+}
+
+function buildFlagPart(key: string, config: (typeof options)[keyof typeof options]): string {
+  const shortFlag = ('short' in config && config.short) ? `-${config.short}, ` : '    ';
+  const longFlag = `--${key}`;
+  const argPlaceholder = config.type === 'string'
+    ? ` <${'placeholder' in config ? config.placeholder : 'value'}>`
+    : '';
+  return `${shortFlag}${longFlag}${argPlaceholder}`;
+}
+
+function getMaxFlagPartLength(configs: typeof options): number {
+  return Object.entries(configs)
+    .map(([key, config]) => buildFlagPart(key, config).length)
+    .reduce((max, current) => Math.max(max, current), 0);
 }
 
 function loadPackageJson(): { version: string, description: string } {

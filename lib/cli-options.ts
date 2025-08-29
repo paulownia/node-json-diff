@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { readFileSync } from 'node:fs';
 import { Writable } from 'node:stream';
 import { parseArgs } from 'node:util';
@@ -115,8 +116,17 @@ export function printVersion(writer: Writable) {
 }
 
 export function printUsage(writer: Writable) {
-  writer.write('Usage: json-diff [options] <file1> <file2>\n');
-  writer.write('Options:\n');
+  if (process.env.NO_COLOR) {
+    chalk.level = 0; // Disable colors if NO_COLOR is set
+  }
+
+  writer.write(chalk.yellowBright('Usage: '));
+  writer.write(chalk.greenBright('json-diff '));
+  writer.write(chalk.blueBright('[options] <file1> <file2>'));
+  writer.write('\n\n');
+
+  writer.write(chalk.yellowBright('Options:'));
+  writer.write('\n');
 
   // Calculate maximum flag length
   const padSize = getMaxFlagPartLength(options);
@@ -124,12 +134,13 @@ export function printUsage(writer: Writable) {
   // Auto-generate from options
   Object.entries(options).forEach(([key, config]) => {
     const flagPart = buildFlagPart(key, config);
-    writer.write(`  ${flagPart.padEnd(padSize)}   ${config.description}\n`);
+    writer.write(`  ${chalk.greenBright(flagPart.padEnd(padSize))}   ${config.description}\n`);
   });
-
-  writer.write('Environment Variables:\n');
-  writer.write(`  ${'FORCE_COLOR=1'.padEnd(padSize)}   Force color output (FORCE_COLOR=0 disables)\n`);
-  writer.write(`  ${'NO_COLOR=1'.padEnd(padSize)}   Disable color output (any value disables)\n`);
+  writer.write('\n');
+  writer.write(chalk.yellowBright('Environment Variables:'));
+  writer.write('\n');
+  writer.write(`  ${chalk.greenBright('FORCE_COLOR=1'.padEnd(padSize))}   Force color output (FORCE_COLOR=0 disables)\n`);
+  writer.write(`  ${chalk.greenBright('NO_COLOR=1'.padEnd(padSize))}   Disable color output (any value disables)\n`);
   writer.write('\n');
 }
 

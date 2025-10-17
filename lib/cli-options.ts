@@ -70,6 +70,11 @@ export function parseCliOptions(args: string[]): CliOptions {
     allowPositionals: true,
   });
 
+  if (process.env.NO_COLOR) {
+    // Disable colors if NO_COLOR is set, but this setting can be overridden by CLI options
+    chalk.level = 0;
+  }
+
   if (values['help']) return { help: true };
   if (values['version']) return { version: true };
 
@@ -116,10 +121,6 @@ export function printVersion(writer: Writable) {
 }
 
 export function printUsage(writer: Writable) {
-  if (process.env.NO_COLOR) {
-    chalk.level = 0; // Disable colors if NO_COLOR is set
-  }
-
   writer.write(chalk.yellowBright('Usage: '));
   writer.write(chalk.greenBright('json-diff '));
   writer.write(chalk.blueBright('[options] <file1> <file2>'));

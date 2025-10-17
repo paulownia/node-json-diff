@@ -21,9 +21,6 @@ export function configureChalkColors(forceColor?: boolean): void {
     chalk.level = 3; // Force full color support
   } else if (forceColor === false) {
     chalk.level = 0; // Disable all colors
-  } else if (process.env.NO_COLOR) {
-    // NO_COLOR is not supported by chalk, handle it manually
-    chalk.level = 0; // Disable all colors
   }
   // Otherwise, use chalk's automatic detection (includes FORCE_COLOR)
 }

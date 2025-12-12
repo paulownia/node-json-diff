@@ -11,6 +11,6 @@
     "skipLibCheck": true,
     "declaration": true
   },
-  "include": ["lib/**/*.ts", "bin/**/*.ts", "index.ts"],
+  "include": ["lib/**/*.ts", "test/**/*.ts", "bin/**/*.ts", "index.ts"],
   "exclude": ["node_modules", "dist"]
 }

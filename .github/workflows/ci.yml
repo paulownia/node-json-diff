@@ -34,10 +34,7 @@ jobs:
       run: npm run lint
 
     - name: Run tests
-      run: npm run test
-
-    - name: Build
-      run: npm run build
+      run: npm run test:dist
 
     - name: Test CLI functionality
       run: |

@@ -26,7 +26,6 @@
     "build": "tsc && chmod +x dist/bin/json-diff.js",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "tsx --test --enable-source-maps --import @power-assert/node test/*.test.ts",
-    "test:ci": "tsc && cp -R test/fixtures dist/test/fixtures && node --test dist/test/*.test.js",
     "lint": "eslint . --ext .js,.ts",
     "format": "eslint . --ext .js,.ts --fix",
     "check-type": "tsc --noEmit"

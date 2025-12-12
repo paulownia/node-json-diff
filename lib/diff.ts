@@ -1,6 +1,6 @@
 // JSON diff logic
 import deepEqual from 'deep-equal';
-import fastArrayDiff from 'fast-array-diff';
+import * as fastArrayDiff from 'fast-array-diff';
 import { DiffItem, DiffOptions, isJsonPrimitive, JsonArray, JsonObject, JsonValue, PathElement } from './types.js';
 /**
  * Create a diff between two JSON values
